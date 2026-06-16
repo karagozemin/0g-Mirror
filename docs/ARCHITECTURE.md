@@ -19,6 +19,17 @@ Relevant code paths:
 - [apps/web/lib/0g/chain.ts](../apps/web/lib/0g/chain.ts)
 - [contracts/contracts/MirrorRegistry.sol](../contracts/contracts/MirrorRegistry.sol)
 
+## Current MVP vs Future Work
+
+| Layer | Current MVP | Future Work |
+| --- | --- | --- |
+| Decision generation | Deterministic local agents | Optional external model/provider adapters |
+| Verification | Deterministic replay verification | 0G Compute-backed verifiable execution |
+| Storage | Real 0G Storage uploads when configured | Larger trace indexing and search |
+| Chain | Real MirrorRegistry attestations on 0G Chain | Role-based verifier registry |
+| Demo | Olympus Arena showcase | Public trace explorer and multi-agent graph |
+
+
 ## 2. High-level architecture diagram
 
 ```mermaid
@@ -268,6 +279,14 @@ Fallback local mode:
 - used only when 0G credentials are missing
 - keeps the UI and demo flow functional
 - is clearly labeled as local, not live 0G infrastructure
+
+## Verification Boundaries
+
+| Category | Meaning |
+| --- | --- |
+| Verified | Trace hashes, storage roots, registered URI/hash, replay status, transaction events |
+| Trusted | Public evidence supplied to the trace, deterministic verifier code, configured RPC/storage endpoints |
+| Not claimed | Private chain-of-thought, external truth beyond submitted evidence, full production oracle security, current fully decentralized compute |
 
 ## 13. Trust assumptions
 

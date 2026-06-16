@@ -38,6 +38,31 @@ Note: the current MVP uses deterministic replay verification and is designed to 
 3. Run `npm run proof:real`.
 4. Confirm `proofs/real-0g-proof.json` matches the table above.
 
+## How to Verify the Storage Proof
+
+1. Use the `0g://` URI or root from the proof table.
+2. Download the stored JSON using the repository's 0G Storage helper or the SDK.
+3. Confirm that `hashes.decisionHash` equals the Decision Hash in the table.
+4. Confirm that the downloaded payload matches `proofs/downloaded-real-trace.json` (or the canonical stored payload).
+
+## How to Verify the Chain Proof
+
+1. Inspect `MirrorRegistry` at the deployed address from the proof table.
+2. Read the stored record for `traceId = 1`.
+3. Confirm the stored `traceURI`, `traceRoot`, and `decisionHash` match the proof table.
+4. Confirm the on-chain `status` is `Verified`.
+5. Match the registration and verification transaction hashes with those in the proof table.
+
+## Reproduce the Proof
+
+Run:
+
+```bash
+npm run proof:real
+```
+
+This command builds a deterministic Decision Trace, uploads it to 0G Storage, registers the trace on 0G Chain, runs replay verification to update status, downloads the trace back, and writes the resulting artifact to `proofs/real-0g-proof.json`.
+
 ## Verification pointers
 
 - Storage: use the 0g:// URI to download the JSON and confirm `hashes.decisionHash` matches the Decision Hash above.
