@@ -9,7 +9,7 @@
 # Links
 
 - GitHub repo: https://github.com/karagozemin/0g-Mirror
-- Live demo: https://web-tau-seven-23.vercel.app
+- Live demo: https://0g-mirror.vercel.app/
 - Demo video: To be added
 
 # Long description

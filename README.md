@@ -10,7 +10,7 @@
 
 ## Live Demo
 
-https://web-tau-seven-23.vercel.app
+https://0g-mirror.vercel.app/
 
 ## Live 0G Proof
 
