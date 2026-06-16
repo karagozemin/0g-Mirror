@@ -31,8 +31,16 @@ export function LandingPage() {
 
         <div className="relative mx-auto flex min-h-[82vh] max-w-7xl items-center px-4 py-20 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.32em] text-cyan">Olympus Arena demo mode</p>
-            <h1 className="mt-5 text-5xl font-semibold tracking-normal text-white sm:text-7xl">0G Mirror</h1>
+            <Image
+              src="/0g-mirror-logo.png"
+              alt="0G Mirror"
+              width={320}
+              height={96}
+              className="h-16 w-auto sm:h-20"
+              priority
+            />
+            <p className="mt-6 text-sm font-semibold uppercase tracking-[0.32em] text-cyan">Olympus Arena demo mode</p>
+            <h1 className="sr-only">0G Mirror</h1>
             <p className="mt-4 text-2xl text-silver/88 sm:text-3xl">Verifiable Decision Trails for AI Agents</p>
             <p className="mt-6 max-w-2xl text-base leading-7 text-silver/72 sm:text-lg">
               AI agents are making decisions with money, trust, and consequences. 0G Mirror turns every agent decision into an auditable trail stored on 0G, replayed through verification, and attested on-chain.

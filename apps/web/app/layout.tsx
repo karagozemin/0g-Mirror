@@ -4,7 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "0G Mirror | Verifiable Decision Trails for AI Agents",
   description:
-    "0G Mirror records, stores, replays, and attests AI-agent decisions on 0G."
+    "0G Mirror records, stores, replays, and attests AI-agent decisions on 0G.",
+  icons: {
+    icon: "/0g-mirror-logo.png",
+    apple: "/0g-mirror-logo.png"
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

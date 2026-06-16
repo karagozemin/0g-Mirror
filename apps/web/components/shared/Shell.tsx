@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, CircuitBoard, Swords } from "lucide-react";
+import { ArrowUpRight, Swords } from "lucide-react";
 
 const nav = [
   { href: "/", label: "Home" },
@@ -12,14 +13,15 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <main className="min-h-screen bg-radial-grid text-silver">
       <header className="sticky top-0 z-40 border-b border-line bg-ink/76 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md border border-cyan/30 bg-cyan/10 text-cyan">
-              <CircuitBoard className="h-4 w-4" />
-            </span>
-            <span>
-              <span className="block text-sm font-semibold tracking-wide text-white">0G Mirror</span>
-              <span className="block text-xs text-silver/55">Decision Trace Registry</span>
-            </span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/0g-mirror-logo.png"
+              alt="0G Mirror"
+              width={160}
+              height={48}
+              className="h-10 w-auto sm:h-11"
+              priority
+            />
           </Link>
 
           <nav className="hidden items-center gap-1 rounded-md border border-line bg-white/[0.03] p-1 md:flex">
