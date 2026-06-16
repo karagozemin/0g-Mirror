@@ -1,103 +1,74 @@
-<p align="center">
-  <img src="0G-Mirror.png" alt="0G Mirror — Verifiable Decision Trails for AI Agents" width="250" />
-</p>
-
 # 0G Mirror
 
-**Verifiable decision trails for AI agents**
+Verifiable Decision Trails for AI Agents
 
-0G Mirror turns consequential AI-agent decisions into auditable proof objects. Each decision becomes a Decision Trace, is stored on 0G Storage, replay-verified against public evidence, and attested on 0G Chain through `MirrorRegistry`.
+- Live Demo: https://0g-mirror.vercel.app/
+- GitHub Repo: https://github.com/karagozemin/0g-Mirror
+- Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Real 0G Proof: [docs/PROOF.md](docs/PROOF.md)
 
-## Live Demo
+0G Mirror turns AI-agent decisions into public, auditable Decision Traces. Each trace captures public evidence, model metadata, tool usage, public rationale, hashes, and verification status, then stores and attests the result on 0G.
 
-https://0g-mirror.vercel.app/
+## What is 0G Mirror?
 
-## One-Line Pitch
+0G Mirror is a Next.js + TypeScript monorepo for verifiable AI-agent decisions. The current MVP uses deterministic local agents, replay verification, 0G Storage, and 0G Chain.
 
-0G Mirror is a verifiable decision trail layer for AI agents: it records what the agent saw, what it used, what it decided, and whether that decision can be replayed and trusted.
+## Problem
 
-## Real 0G Proof
+AI agents are making decisions, but users cannot verify what evidence, config, or output led to those decisions.
 
-The project includes a verified end-to-end proof from Galileo testnet.
+## Solution
 
-```txt
-Chain ID: 16602
-MirrorRegistry: 0x8c5C403994CC7a5A469bBF82904e504060109858
-Trace ID: 1
-Verification Status: Verified
-Decision Hash: 0x7f1775e02212e8764cefc347a09df82aa33ebe05d377e2bb496fb9c2fe1da884
-0G Storage URI: 0g://0xe58925c613298780175066ae3e2762e6154b152329a3b3c8b532716196ef4aee
-0G Storage Tx: 0x109b3457bc7a0b0032b1d81bc773f8664c5dbaaa310adb46d73bdb7360757a03
-Register Trace Tx: 0x439d5a8bca2bd17b051738d12124b90a0c5cb3ab5c1cc996a76e45137f3b23de
-Verification Status Tx: 0x7061af685a1c61e3db2ee976034baad35da506b73464a737dace23027eae2515
-```
+0G Mirror turns every decision into a Decision Trace:
 
-## Why It Exists
+- stored on 0G Storage
+- registered on 0G Chain
+- checked through replay verification
+- surfaced through a clean UI
 
-AI agents are already making decisions with real money, trust, and operational consequences. The missing primitive is not another chatbot. The missing primitive is a public, replayable proof of how a decision was made.
+## Live 0G Proof
 
-0G Mirror fills that gap by turning each agent decision into a decision trail anyone can inspect.
+Source artifact: [proofs/real-0g-proof.json](proofs/real-0g-proof.json)
 
-## What It Does
+| Item | Value |
+| --- | --- |
+| Chain ID | 16602 |
+| MirrorRegistry | 0x8c5C403994CC7a5A469bBF82904e504060109858 |
+| Trace ID | 1 |
+| Verification Status | Verified |
+| Decision Hash | 0x7f1775e02212e8764cefc347a09df82aa33ebe05d377e2bb496fb9c2fe1da884 |
+| 0G Storage URI | 0g://0xe58925c613298780175066ae3e2762e6154b152329a3b3c8b532716196ef4aee |
+| 0G Storage Tx | 0x109b3457bc7a0b0032b1d81bc773f8664c5dbaaa310adb46d73bdb7360757a03 |
+| Register Trace Tx | 0x439d5a8bca2bd17b051738d12124b90a0c5cb3ab5c1cc996a76e45137f3b23de |
+| Verification Status Tx | 0x7061af685a1c61e3db2ee976034baad35da506b73464a737dace23027eae2515 |
 
-- Records the task input, public context, evidence, model config, tools used, decision output, and public rationale.
-- Hashes the trace deterministically so the same public inputs produce the same decision hash.
-- Stores the trace JSON and court verdict JSON on 0G Storage.
-- Registers trace roots, storage URIs, verification status, and verdict attestations on 0G Chain.
-- Replays the decision path to classify the trace as Verified, Inconsistent, or Missing Evidence.
-- Runs Olympus Arena, where two agents compete and a Court Verdict is produced from their traces.
+## How it Works
 
-## Product Surface
+1. Agent makes a decision.
+2. Mirror creates a Decision Trace.
+3. Trace is stored and attested on 0G.
+4. Replay verification marks it Verified, Inconsistent, or Missing Evidence.
 
-- Mirror Core: create a Decision Trace, store it, register it, and verify it.
-- Verify page: reopen any stored trace and replay the public evidence.
-- Olympus Arena: run two agents head-to-head and produce a verdict object from both traces.
-- Proof layer: keep the real trace hash, storage URI, and chain txs visible for judging.
+## Olympus Arena
 
-## Architecture Snapshot
+Olympus Arena is the live showcase mode where two agents compete, appeal, and prove their decisions using the same Mirror Core primitives. It is not a separate project; it is the agent-vs-agent proof surface built on top of 0G Mirror.
 
-```txt
-User
-  |
-  v
-Next.js App Router
-  |
-  +--> Deterministic Agent Layer
-  |      - Aegis: cautious DeFi risk analyst
-  |      - Nyx: aggressive yield strategist
-  |      - Hermes: fast execution agent
-  |
-  +--> Decision Trace Layer
-  |      - Zod schema validation
-  |      - Stable JSON hashing
-  |      - Public rationale only
-  |
-  +--> 0G Storage Adapter
-  |      - uploadJsonTo0G(data)
-  |      - downloadJsonFrom0G(uri)
-  |
-  +--> 0G Chain Adapter
-  |      - registerDecisionTraceOnChain
-  |      - updateVerificationStatusOnChain
-  |      - registerCourtVerdictOnChain
-  |
-  +--> Replay Verifier
-         - Deterministic evidence scoring
-         - Verified / Inconsistent / Missing Evidence
-         - Updates the stored trace verification status
+## Architecture
 
-Olympus Arena adds a second path on top of the same primitives:
+For the full technical breakdown, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-User -> Two Agents -> Two Decision Traces -> Replay Verification -> Olympus Judge -> Court Verdict -> 0G Storage + 0G Chain
-```
+## Tech Stack
 
-## Repository Map
+- Next.js
+- TypeScript
+- Solidity
+- Hardhat
+- ethers
+- Zod
+- 0G Storage SDK
+- 0G Chain
 
-See the technical architecture in [ARCHITECTURE.md](ARCHITECTURE.md).
-
-If you want the full implementation reference, start there. The README is the product entry point; ARCHITECTURE.md is the technical source of truth.
-
-## Quick Start
+## Run Locally
 
 ```bash
 npm install
@@ -106,44 +77,44 @@ npm run dev
 
 Open http://localhost:3000.
 
-## Deployment and Proof
+To regenerate the real proof artifact after credentials are configured, run `npm run proof:real`.
 
-- `npm run compile` builds the smart contract project.
-- `npm run deploy:0g` deploys `MirrorRegistry` to 0G Chain.
-- `npm run proof:real` regenerates the real proof artifact after credentials are configured.
+## Environment Variables
 
-## Evidence To Show Judges
+Copy [.env.example](.env.example) to `.env.local` at the repository root.
 
-- The real proof block above.
-- The live demo link above.
-- The decision trace screen in Mirror Core.
-- The replay verifier that marks traces as Verified, Inconsistent, or Missing Evidence.
-- The Olympus Arena verdict card.
+```bash
+NEXT_PUBLIC_MIRROR_REGISTRY_ADDRESS=0x...
+NEXT_PUBLIC_0G_CHAIN_RPC=https://evmrpc-testnet.0g.ai
+NEXT_PUBLIC_0G_CHAIN_ID=16602
+PRIVATE_KEY=...
+0G_STORAGE_RPC=https://evmrpc-testnet.0g.ai
+0G_STORAGE_INDEXER=https://indexer-storage-testnet-turbo.0g.ai
+0G_STORAGE_PRIVATE_KEY=...
+AI_PROVIDER_API_KEY=...
+```
 
-## Screenshots
+## Smart Contract
 
-![0G Mirror landing page](docs/screenshots/01-landing.png)
+MirrorRegistry is the on-chain registry in [contracts/contracts/MirrorRegistry.sol](contracts/contracts/MirrorRegistry.sol). It registers decision traces, updates verification status, and registers court verdicts while keeping on-chain state minimal.
 
-![Mirror Core Decision Trace](docs/screenshots/02-mirror-decision-trace.png)
+## Demo Flow
 
-![Mirror Core real 0G Storage URI](docs/screenshots/03-mirror-storage-uri.png)
-
-![Mirror Core Verified replay status](docs/screenshots/04-mirror-verified.png)
-
-![Olympus Arena Aegis vs Nyx](docs/screenshots/05-arena-aegis-vs-nyx.png)
-
-![Olympus Court Verdict Card](docs/screenshots/06-olympus-verdict-card.png)
+For a judge-ready 90-second script, see [docs/DEMO_FLOW.md](docs/DEMO_FLOW.md).
 
 ## Limitations
 
-- The current MVP uses deterministic local agents and deterministic replay verification.
-- The app does not expose private chain-of-thought.
-- If 0G credentials are missing, the UI falls back to clearly labeled local demo mode.
-- Production deployments should add stronger access control and policy layers.
+- The current MVP uses deterministic local agents.
+- The app records public rationale and evidence, not private chain-of-thought.
+- Access control is minimal.
+- If 0G credentials are missing, the app falls back to clearly labeled local demo mode.
+- The current MVP uses deterministic replay verification and is designed to plug into 0G Compute for verifiable execution.
 
-## Why This Wins
+## Roadmap
 
-- It uses 0G as real infrastructure, not as branding.
-- It proves the full path: trace, storage, replay, and attestation.
-- It includes a verified on-chain proof artifact instead of only screenshots.
-- It gives judges a simple flow: inspect the trace, verify it, and trust the result.
+- 0G Compute verifier integration
+- Browser wallet flow
+- Trace explorer
+- Multi-agent decision graph
+- Verifier roles and stronger policy controls
+
