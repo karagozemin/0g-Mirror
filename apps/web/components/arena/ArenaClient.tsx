@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
-import { Crown, Database, Gavel, Scale, ShieldCheck, Swords } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Crown, Database, Gavel, Scale, ShieldCheck, Swords, Trophy, Zap } from "lucide-react";
 import { agents, runAgentDecision, type AgentId } from "@/lib/ai/agent";
 import { applyVerification } from "@/lib/ai/verifier";
 import { runOlympusJudge } from "@/lib/ai/judge";
@@ -15,6 +15,7 @@ import { Notice } from "@/components/shared/Notice";
 import { Shell } from "@/components/shared/Shell";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { TraceCard } from "@/components/shared/TraceCard";
+import { MirrorBackground } from "@/components/fx/MirrorBackground";
 import {
   ensureStoredAndRegisteredTrace,
   storeAndAttestVerdict,
@@ -22,6 +23,12 @@ import {
 } from "@/components/shared/client-actions";
 
 type BusyState = "start" | "verify" | "appeal" | null;
+
+const agentStyles: Record<AgentId, { gradient: string; border: string; text: string }> = {
+  aegis: { gradient: "from-cyan/20 to-cyan/5", border: "border-cyan/40", text: "text-cyan" },
+  nyx: { gradient: "from-danger/20 to-danger/5", border: "border-danger/40", text: "text-danger" },
+  hermes: { gradient: "from-mint/20 to-mint/5", border: "border-mint/40", text: "text-mint" }
+};
 
 export function ArenaClient() {
   const [agentA, setAgentA] = useState<AgentId>("aegis");
@@ -31,19 +38,25 @@ export function ArenaClient() {
   const [verdict, setVerdict] = useState<CourtVerdict | null>(null);
   const [busy, setBusy] = useState<BusyState>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [battling, setBattling] = useState(false);
 
   function startBattle() {
     if (agentA === agentB) return;
     setBusy("start");
     setNotice(null);
-    const nextA = runAgentDecision(agentA, "defi-vault");
-    const nextB = runAgentDecision(agentB, "defi-vault");
-    saveTrace(nextA);
-    saveTrace(nextB);
-    setTraceA(nextA);
-    setTraceB(nextB);
+    setBattling(true);
     setVerdict(null);
-    setBusy(null);
+
+    setTimeout(() => {
+      const nextA = runAgentDecision(agentA, "defi-vault");
+      const nextB = runAgentDecision(agentB, "defi-vault");
+      saveTrace(nextA);
+      saveTrace(nextB);
+      setTraceA(nextA);
+      setTraceB(nextB);
+      setBattling(false);
+      setBusy(null);
+    }, 800);
   }
 
   async function verifyBoth() {
@@ -81,71 +94,137 @@ export function ArenaClient() {
 
   return (
     <Shell>
+      {/* Arena Header */}
       <section className="relative overflow-hidden border-b border-line">
-        <Image
-          src="/olympus-mirror-hero.png"
-          alt="Olympus decision arena"
-          fill
-          priority
-          className="object-cover opacity-28"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/88 via-ink/72 to-ink" />
-        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-violet">Live demo mode</p>
-          <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <MirrorBackground variant="arena" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/80 to-ink" />
+
+        <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h1 className="text-4xl font-semibold text-white sm:text-5xl">Olympus Arena</h1>
-              <p className="mt-3 max-w-2xl text-silver/70">
-                Agents compete, Mirror records their Decision Traces, and Olympus judges the appeal using public evidence.
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/8 px-4 py-1.5">
+                <Swords className="h-3.5 w-3.5 text-gold" />
+                <span className="font-mono text-xs uppercase tracking-[0.2em] text-gold">Live Demo Mode</span>
+              </div>
+              <h1 className="mt-5 font-display text-5xl font-bold text-white sm:text-6xl">
+                Olympus <span className="text-gold-glow text-gold">Arena</span>
+              </h1>
+              <p className="mt-3 max-w-xl text-silver/65">
+                Two agents. One challenge. Mirror records both Decision Traces. Olympus judges the appeal with public evidence.
               </p>
             </div>
-            <div className="glass rounded-lg p-4">
-              <p className="text-sm font-semibold text-white">Challenge</p>
-              <p className="mt-1 text-sm text-silver/65">Should this DeFi vault be trusted?</p>
+            <div className="glass-gold rounded-2xl px-6 py-4">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold/60">Challenge</p>
+              <p className="mt-1 font-display text-lg font-bold text-white">Should this DeFi vault be trusted?</p>
             </div>
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        {notice ? <div className="mb-5"><Notice>{notice}</Notice></div> : null}
+        {notice ? (
+          <div className="mb-6">
+            <Notice variant={notice.includes("Local") ? "warn" : "success"}>{notice}</Notice>
+          </div>
+        ) : null}
 
-        <div className="glass rounded-lg p-5">
-          <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr_auto] lg:items-end">
-            <AgentSelect label="Agent A" value={agentA} onChange={setAgentA} />
-            <div className="hidden pb-3 text-violet lg:block">
-              <Swords className="h-6 w-6" />
+        {/* Battle Setup */}
+        <div className="glass rounded-2xl p-6">
+          <div className="grid items-end gap-4 lg:grid-cols-[1fr_auto_1fr_auto]">
+            <AgentSelect label="Challenger" value={agentA} onChange={setAgentA} side="left" />
+            <div className="flex justify-center pb-2">
+              <motion.div
+                animate={battling ? { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] } : {}}
+                transition={{ duration: 0.6 }}
+                className="vs-badge flex h-14 w-14 items-center justify-center rounded-full"
+              >
+                <span className="font-display text-lg font-black text-gold">VS</span>
+              </motion.div>
             </div>
-            <AgentSelect label="Agent B" value={agentB} onChange={setAgentB} />
-            <Button onClick={startBattle} loading={busy === "start"} disabled={agentA === agentB} variant="primary">
-              <Swords className="h-4 w-4" />
+            <AgentSelect label="Defender" value={agentB} onChange={setAgentB} side="right" />
+            <Button
+              onClick={startBattle}
+              loading={busy === "start"}
+              disabled={agentA === agentB}
+              variant="gold"
+              size="lg"
+            >
+              <Zap className="h-4 w-4" />
               Start Battle
             </Button>
           </div>
+          {agentA === agentB ? (
+            <p className="mt-3 text-center text-sm text-danger/80">Select two different agents to battle.</p>
+          ) : null}
         </div>
 
-        <div className="mt-6 grid gap-5 lg:grid-cols-2">
-          {traceA ? <TraceCard trace={traceA} compact /> : <EmptySeat name="Agent A" />}
-          {traceB ? <TraceCard trace={traceB} compact /> : <EmptySeat name="Agent B" />}
+        {/* Battle Arena */}
+        <div className="relative mt-8">
+          {battling ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-ink/80 backdrop-blur-sm"
+            >
+              <div className="text-center">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="mx-auto h-12 w-12 rounded-full border-2 border-gold/30 border-t-gold"
+                />
+                <p className="mt-4 font-display text-lg font-bold text-gold">Agents deciding…</p>
+              </div>
+            </motion.div>
+          ) : null}
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            <AnimatePresence mode="wait">
+              {traceA ? (
+                <motion.div key="a" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                  <TraceCard trace={traceA} compact />
+                </motion.div>
+              ) : (
+                <EmptySeat key="empty-a" agentId={agentA} side="left" />
+              )}
+            </AnimatePresence>
+            <AnimatePresence mode="wait">
+              {traceB ? (
+                <motion.div key="b" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                  <TraceCard trace={traceB} compact />
+                </motion.div>
+              ) : (
+                <EmptySeat key="empty-b" agentId={agentB} side="right" />
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
-        <div className="mt-6 glass rounded-lg p-4">
+        {/* Actions */}
+        <div className="mt-6 glass rounded-2xl p-5">
           <div className="grid gap-3 sm:grid-cols-2">
             <Button onClick={verifyBoth} loading={busy === "verify"} disabled={!traceA || !traceB}>
               <ShieldCheck className="h-4 w-4" />
-              Verify Both
+              Verify Both Traces
             </Button>
-            <Button onClick={appeal} loading={busy === "appeal"} disabled={!traceA || !traceB} variant="primary">
+            <Button onClick={appeal} loading={busy === "appeal"} disabled={!traceA || !traceB} variant="gold">
               <Gavel className="h-4 w-4" />
               Appeal to Olympus
             </Button>
           </div>
-          <p className="mt-3 text-sm text-silver/55">
-            Olympus Arena is the live showcase: agents compete, appeal, and prove their decisions.
-          </p>
         </div>
 
-        {verdict ? <VerdictCard verdict={verdict} /> : null}
+        {/* Verdict */}
+        <AnimatePresence>
+          {verdict ? (
+            <motion.div
+              initial={{ opacity: 0, y: 32, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <VerdictCard verdict={verdict} />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </section>
     </Shell>
   );
@@ -154,80 +233,107 @@ export function ArenaClient() {
 function AgentSelect({
   label,
   value,
-  onChange
+  onChange,
+  side
 }: {
   label: string;
   value: AgentId;
   onChange: (value: AgentId) => void;
+  side: "left" | "right";
 }) {
+  const style = agentStyles[value];
+
   return (
     <label className="block">
-      <span className="text-xs uppercase tracking-[0.18em] text-silver/45">{label}</span>
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value as AgentId)}
-        className="mt-2 h-11 w-full rounded-md border border-line bg-ink/88 px-3 text-sm font-semibold text-white outline-none transition focus:border-cyan/70"
-      >
-        {Object.values(agents).map((agent) => (
-          <option key={agent.id} value={agent.id}>
-            {agent.name} - {agent.role}
-          </option>
-        ))}
-      </select>
+      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-silver/40">{label}</span>
+      <div className={`mt-2 flex items-center gap-3 rounded-xl border bg-gradient-to-br ${style.gradient} ${style.border} p-3`}>
+        <div className={`flex h-10 w-10 items-center justify-center rounded-xl border bg-black/30 text-lg font-bold ${style.text} ${style.border}`}>
+          {agents[value].name[0]}
+        </div>
+        <select
+          value={value}
+          onChange={(event) => onChange(event.target.value as AgentId)}
+          className="flex-1 bg-transparent text-sm font-bold text-white outline-none"
+        >
+          {Object.values(agents).map((agent) => (
+            <option key={agent.id} value={agent.id} className="bg-void">
+              {agent.name} — {agent.role}
+            </option>
+          ))}
+        </select>
+      </div>
     </label>
   );
 }
 
-function EmptySeat({ name }: { name: string }) {
+function EmptySeat({ agentId, side }: { agentId: AgentId; side: "left" | "right" }) {
+  const style = agentStyles[agentId];
+  const agent = agents[agentId];
+
   return (
-    <div className="glass flex min-h-[300px] items-center justify-center rounded-lg p-6 text-center">
+    <motion.div
+      initial={{ opacity: 0, x: side === "left" ? -16 : 16 }}
+      animate={{ opacity: 1, x: 0 }}
+      className={`glass flex min-h-[280px] items-center justify-center rounded-2xl border-dashed p-6 text-center ${style.border}`}
+    >
       <div>
-        <Scale className="mx-auto h-8 w-8 text-silver/35" />
-        <p className="mt-3 text-sm font-semibold text-white">{name} waiting</p>
-        <p className="mt-1 text-sm text-silver/52">Start Battle to generate a Decision Trace.</p>
+        <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border bg-gradient-to-br text-2xl font-bold ${style.gradient} ${style.text} ${style.border}`}>
+          {agent.name[0]}
+        </div>
+        <p className="mt-4 font-display font-bold text-white">{agent.name}</p>
+        <p className="mt-1 text-sm text-silver/45">Waiting for battle…</p>
+        <Scale className="mx-auto mt-4 h-6 w-6 text-silver/20" />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function VerdictCard({ verdict }: { verdict: CourtVerdict }) {
   return (
-    <div className="mt-6 overflow-hidden rounded-lg border border-cyan/25 bg-gradient-to-br from-cyan/12 via-white/[0.045] to-violet/14 shadow-glow">
-      <div className="border-b border-line bg-black/18 p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="mt-8 overflow-hidden rounded-2xl border border-gold/30 shadow-glow-gold">
+      <div className="relative border-b border-line bg-gradient-to-r from-gold/10 via-void to-gold/5 p-6">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.08),transparent_60%)]" />
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.24em] text-cyan">Olympus Court Verdict Card</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">{verdict.caseTitle}</h2>
+            <div className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-gold" />
+              <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-gold/70">Olympus Court Verdict</p>
+            </div>
+            <h2 className="mt-2 font-display text-3xl font-bold text-white">{verdict.caseTitle}</h2>
           </div>
           <StatusPill status={verdict.attestation?.mode === "0g" ? "OnChain" : "Local"} />
         </div>
       </div>
-      <div className="grid gap-5 p-5 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="rounded-md border border-line bg-black/18 p-5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-md border border-cyan/40 bg-cyan/10 text-cyan">
-              <Crown className="h-6 w-6" />
+
+      <div className="grid gap-5 bg-void/50 p-6 lg:grid-cols-[0.85fr_1.15fr]">
+        <div className="rounded-xl border border-gold/20 bg-gold/5 p-6">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold/40 bg-gold/10">
+              <Crown className="h-7 w-7 text-gold" />
             </div>
             <div>
-              <p className="text-sm text-silver/55">Winner</p>
-              <p className="text-3xl font-semibold text-white">{verdict.verdict.winner}</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-gold/60">Winner</p>
+              <p className="font-display text-4xl font-black text-white">{verdict.verdict.winner}</p>
             </div>
           </div>
-          <p className="mt-5 text-sm leading-6 text-silver/74">{verdict.verdict.summary}</p>
+          <p className="mt-5 text-sm leading-relaxed text-silver/75">{verdict.verdict.summary}</p>
         </div>
+
         <div className="grid gap-3 sm:grid-cols-2">
           <VerdictMetric label="Evidence coverage A" value={`${verdict.verdict.evidenceCoverage.traceA}%`} />
           <VerdictMetric label="Evidence coverage B" value={`${verdict.verdict.evidenceCoverage.traceB}%`} />
           <VerdictMetric label="Verification A" value={verdict.verdict.verificationStatus.traceA} />
           <VerdictMetric label="Verification B" value={verdict.verdict.verificationStatus.traceB} />
           <VerdictMetric label="0G Storage URI" value={verdict.storage?.uri ?? "pending"} wide />
-          <VerdictMetric label="On-chain attestation ID" value={String(verdict.attestation?.verdictId ?? "pending")} />
+          <VerdictMetric label="Attestation ID" value={String(verdict.attestation?.verdictId ?? "pending")} />
           <VerdictMetric label="Verdict root" value={shortHash(verdict.hashes.verdictRoot, 8)} />
         </div>
       </div>
-      <div className="border-t border-line px-5 py-4 text-sm text-silver/62">
-        <Database className="mr-2 inline h-4 w-4 text-cyan" />
-        Claim reviewed: {verdict.claim}
+
+      <div className="border-t border-line bg-black/20 px-6 py-4">
+        <Database className="mr-2 inline h-4 w-4 text-gold/70" />
+        <span className="text-sm text-silver/60">Claim reviewed: </span>
+        <span className="text-sm font-medium text-white">{verdict.claim}</span>
       </div>
     </div>
   );
@@ -235,9 +341,9 @@ function VerdictCard({ verdict }: { verdict: CourtVerdict }) {
 
 function VerdictMetric({ label, value, wide = false }: { label: string; value: string; wide?: boolean }) {
   return (
-    <div className={`min-w-0 rounded-md border border-line bg-black/16 p-3 ${wide ? "sm:col-span-2" : ""}`}>
-      <p className="text-xs uppercase tracking-[0.16em] text-silver/45">{label}</p>
-      <p className="mt-1 truncate text-sm font-semibold text-white" title={value}>
+    <div className={`min-w-0 rounded-xl border border-line/60 bg-black/20 p-3 ${wide ? "sm:col-span-2" : ""}`}>
+      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-silver/40">{label}</p>
+      <p className="mt-1 truncate font-mono text-sm font-semibold text-white" title={value}>
         {value}
       </p>
     </div>

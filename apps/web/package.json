@@ -11,6 +11,7 @@
   "dependencies": {
     "@0gfoundation/0g-storage-ts-sdk": "^1.2.10",
     "ethers": "6.13.1",
+    "framer-motion": "^12.40.0",
     "lucide-react": "^0.468.0",
     "next": "^14.2.23",
     "react": "^18.3.1",
