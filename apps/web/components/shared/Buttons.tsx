@@ -1,10 +1,14 @@
-import type { ButtonHTMLAttributes } from "react";
+"use client";
+
+import type { HTMLMotionProps } from "framer-motion";
+import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonProps = Omit<HTMLMotionProps<"button">, "children"> & {
   variant?: "primary" | "secondary" | "ghost" | "danger" | "gold";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
+  children: React.ReactNode;
 };
 
 const variants = {
@@ -36,13 +40,16 @@ export function Button({
   const shimmer = variant === "primary" || variant === "gold";
 
   return (
-    <button
-      className={`inline-flex items-center justify-center gap-2 rounded-2xl border font-semibold tracking-[-0.01em] transition-all duration-300 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45 ${variants[variant]} ${sizes[size]} ${shimmer ? "btn-shimmer" : ""} ${className}`}
+    <motion.button
+      whileHover={{ y: -2, scale: 1.01 }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: "spring", stiffness: 520, damping: 28 }}
+      className={`inline-flex items-center justify-center gap-2 rounded-2xl border font-semibold tracking-[-0.01em] transition-all duration-300 will-change-transform active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45 ${variants[variant]} ${sizes[size]} ${shimmer ? "btn-shimmer" : ""} ${className}`}
       disabled={disabled || loading}
       {...props}
     >
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
       <span className="relative flex items-center gap-2">{children}</span>
-    </button>
+    </motion.button>
   );
 }

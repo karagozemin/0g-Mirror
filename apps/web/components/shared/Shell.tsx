@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Sparkles, Swords } from "lucide-react";
 
+const MotionLink = motion(Link);
+
 const nav = [
   { href: "/", label: "Home" },
   { href: "/mirror", label: "Mirror Core" },
@@ -71,22 +73,28 @@ export function Shell({ children }: { children: React.ReactNode }) {
               Galileo · 16602
             </div>
 
-            <Link
+            <MotionLink
               href="/mirror"
+              whileHover={{ y: -2, scale: 1.015 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 520, damping: 28 }}
               className="btn-shimmer group inline-flex items-center gap-2 rounded-2xl border border-cyan/35 bg-cyan/12 px-4 py-2.5 text-sm font-semibold text-white shadow-glow-soft transition hover:border-cyan/60 hover:bg-cyan/16"
             >
               <Sparkles className="h-4 w-4 text-cyan transition group-hover:rotate-12" />
               Mirror Core
               <ArrowUpRight className="h-3.5 w-3.5 opacity-60 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
+            </MotionLink>
 
-            <Link
+            <MotionLink
               href="/arena"
+              whileHover={{ y: -2, scale: 1.015 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 520, damping: 28 }}
               className="hidden items-center gap-2 rounded-2xl border border-gold/40 bg-gold/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:border-gold/70 hover:bg-gold/15 hover:shadow-glow-gold sm:inline-flex"
             >
               <Swords className="h-4 w-4 text-gold transition group-hover:rotate-12" />
               Arena
-            </Link>
+            </MotionLink>
           </div>
         </div>
       </header>

@@ -15,6 +15,10 @@ import { StatusPill } from "@/components/shared/StatusPill";
 import { TraceCard } from "@/components/shared/TraceCard";
 import { MirrorBackground } from "@/components/fx/MirrorBackground";
 import { updateTraceStatus } from "@/components/shared/client-actions";
+import { ExplorerValue } from "@/components/shared/ExplorerValue";
+import { txExplorerHref } from "@/lib/0g/explorer";
+
+const MotionLink = motion(Link);
 
 export function VerifyClient({ traceId }: { traceId: string }) {
   const [trace, setTrace] = useState<DecisionTrace | null>(null);
@@ -43,13 +47,16 @@ export function VerifyClient({ traceId }: { traceId: string }) {
       <section className="relative overflow-hidden border-b border-line">
         <MirrorBackground variant="subtle" />
         <div className="relative mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-          <Link
+          <MotionLink
             href="/mirror"
+            whileHover={{ x: -2 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 520, damping: 28 }}
             className="inline-flex items-center gap-2 text-sm font-semibold text-cyan transition hover:text-cyan/75"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Mirror
-          </Link>
+          </MotionLink>
 
           <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -93,11 +100,21 @@ export function VerifyClient({ traceId }: { traceId: string }) {
             className="space-y-6"
           >
             <div className="glass rounded-2xl p-5">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <Meta label="Trace ID" value={trace.traceId} />
-                <Meta label="Storage URI" value={trace.storage?.uri ?? "pending"} />
                 <Meta label="Decision hash" value={shortHash(trace.hashes.decisionHash, 8)} />
+                <Meta label="Storage URI" value={trace.storage?.uri ?? "pending"} />
+                <Meta
+                  label="Storage tx"
+                  value={shortHash(trace.storage?.txHash ?? "pending", 8)}
+                  href={txExplorerHref(trace.storage?.txHash, trace.attestation?.chainId)}
+                />
                 <Meta label="Attestation" value={String(trace.attestation?.traceId ?? "pending")} />
+                <Meta
+                  label="Register tx"
+                  value={shortHash(trace.attestation?.txHash ?? "pending", 8)}
+                  href={txExplorerHref(trace.attestation?.txHash, trace.attestation?.chainId)}
+                />
               </div>
               <Button onClick={replay} loading={busy} variant="primary" size="lg" className="mt-5">
                 <RotateCcw className="h-4 w-4" />
@@ -113,13 +130,21 @@ export function VerifyClient({ traceId }: { traceId: string }) {
   );
 }
 
-function Meta({ label, value }: { label: string; value: string }) {
+function Meta({ label, value, href }: { label: string; value: string; href?: string }) {
   return (
     <div className="min-w-0 rounded-xl border border-line/60 bg-black/20 p-3">
       <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-silver/40">{label}</p>
-      <p className="mt-1 truncate font-mono text-sm font-semibold text-white" title={value}>
-        {value}
-      </p>
+      {href ? (
+        <div className="mt-1">
+          <ExplorerValue href={href} title={value} className="w-full justify-between px-2 py-1.5">
+            {value}
+          </ExplorerValue>
+        </div>
+      ) : (
+        <p className="mt-1 truncate font-mono text-sm font-semibold text-white" title={value}>
+          {value}
+        </p>
+      )}
     </div>
   );
 }

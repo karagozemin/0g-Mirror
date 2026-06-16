@@ -19,6 +19,8 @@ import { LiveTicker } from "@/components/fx/LiveTicker";
 import { HeroReveal, Reveal, StaggerChildren, StaggerItem } from "@/components/fx/Reveal";
 import { Shell } from "@/components/shared/Shell";
 
+const MotionLink = motion(Link);
+
 const stats = [
   { value: "Verified", label: "Trace #1 on Galileo", accent: "text-mint" },
   { value: "0G", label: "Storage + Chain attested", accent: "text-cyan" },
@@ -99,21 +101,27 @@ export function LandingPage() {
 
               <HeroReveal delay={0.3}>
                 <div className="mt-10 flex flex-wrap gap-4">
-                  <Link
+                  <MotionLink
                     href="/mirror"
+                    whileHover={{ y: -3, scale: 1.015 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 520, damping: 28 }}
                     className="btn-shimmer group inline-flex min-h-13 items-center gap-3 rounded-2xl border border-cyan/50 bg-cyan/12 px-7 py-4 text-base font-bold text-white shadow-glow transition hover:border-cyan/80 hover:shadow-glow-lg"
                   >
                     <Zap className="h-5 w-5 transition group-hover:scale-110" />
                     Launch Mirror Core
                     <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                  </Link>
-                  <Link
+                  </MotionLink>
+                  <MotionLink
                     href="/arena"
+                    whileHover={{ y: -3, scale: 1.015 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 520, damping: 28 }}
                     className="group inline-flex min-h-13 items-center gap-3 rounded-2xl border border-gold/40 bg-gold/8 px-7 py-4 text-base font-bold text-white transition hover:border-gold/65 hover:shadow-glow-gold"
                   >
                     <Swords className="h-5 w-5 text-gold transition group-hover:rotate-12" />
                     Enter Olympus Arena
-                  </Link>
+                  </MotionLink>
                 </div>
               </HeroReveal>
 
@@ -290,12 +298,15 @@ export function LandingPage() {
                   <p className="mt-2 text-sm text-silver/60">
                     Two agents. Same DeFi vault challenge. Mirror records both Decision Traces. Olympus reviews the dispute with public evidence.
                   </p>
-                  <Link
+                  <MotionLink
                     href="/arena"
+                    whileHover={{ y: -2, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 520, damping: 28 }}
                     className="btn-shimmer mt-6 inline-flex items-center gap-2 rounded-xl border border-gold/45 bg-gold/10 px-6 py-3 text-sm font-bold text-white transition hover:border-gold/70"
                   >
                     Start the battle <ArrowRight className="h-4 w-4" />
-                  </Link>
+                  </MotionLink>
                 </div>
               </div>
             </Reveal>
@@ -311,13 +322,16 @@ export function LandingPage() {
               The mirror that proves what agents decided.
             </p>
             <p className="mt-4 text-silver/55">Stored on 0G · Verified by replay · Attested on-chain</p>
-            <Link
+            <MotionLink
               href="/mirror"
+              whileHover={{ y: -3, scale: 1.015 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 520, damping: 28 }}
               className="btn-shimmer mt-8 inline-flex items-center gap-2 rounded-2xl border border-cyan/50 bg-cyan/12 px-8 py-4 text-base font-bold text-white shadow-glow transition hover:shadow-glow-lg"
             >
               <Zap className="h-5 w-5" />
               Launch Mirror Core
-            </Link>
+            </MotionLink>
           </Reveal>
         </div>
       </section>
@@ -354,8 +368,11 @@ function ModeCard({
       viewport={{ once: true }}
       transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
-      <Link
+      <MotionLink
         href={href}
+        whileHover={{ y: -4, scale: 1.01 }}
+        whileTap={{ scale: 0.985 }}
+        transition={{ type: "spring", stiffness: 520, damping: 28 }}
         className={`group glass glass-hover flex flex-col rounded-2xl p-7 transition ${colors[accent]}`}
       >
         <div className={`flex h-14 w-14 items-center justify-center rounded-2xl border bg-white/[0.04] transition group-hover:scale-105 ${colors[accent]}`}>
@@ -367,7 +384,7 @@ function ModeCard({
         <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-white transition group-hover:gap-3">
           Enter <ArrowRight className="h-4 w-4" />
         </span>
-      </Link>
+      </MotionLink>
     </motion.div>
   );
 }

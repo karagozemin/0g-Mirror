@@ -171,9 +171,12 @@ export function MirrorClient() {
               </div>
               <div className="mt-4 grid gap-3">
                 {Object.values(agents).map((agent) => (
-                  <button
+                  <motion.button
                     key={agent.id}
                     onClick={() => setAgentId(agent.id)}
+                    whileHover={{ y: -2, scale: 1.01 }}
+                    whileTap={{ scale: 0.985 }}
+                    transition={{ type: "spring", stiffness: 520, damping: 28 }}
                     className={`agent-card ${agentColors[agent.id]} rounded-xl p-4 text-left ${agentId === agent.id ? "selected" : ""}`}
                   >
                     <div className="flex items-center gap-3">
@@ -188,7 +191,7 @@ export function MirrorClient() {
                         <Sparkles className="ml-auto h-4 w-4 text-current opacity-70" />
                       ) : null}
                     </div>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -200,9 +203,12 @@ export function MirrorClient() {
               </div>
               <div className="mt-4 grid gap-3">
                 {Object.values(tasks).map((task) => (
-                  <button
+                  <motion.button
                     key={task.id}
                     onClick={() => setTaskId(task.id)}
+                    whileHover={{ y: -2, scale: 1.01 }}
+                    whileTap={{ scale: 0.985 }}
+                    transition={{ type: "spring", stiffness: 520, damping: 28 }}
                     className={`rounded-xl border p-4 text-left transition-all duration-300 ${
                       taskId === task.id
                         ? "border-gold/50 bg-gold/8 shadow-glow-gold"
@@ -211,7 +217,7 @@ export function MirrorClient() {
                   >
                     <span className="font-display font-bold text-white">{task.title}</span>
                     <span className="mt-1 block text-sm text-silver/55">{task.input}</span>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>

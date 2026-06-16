@@ -5,6 +5,8 @@ import { CheckCircle2, Database, Fingerprint, Network, ShieldAlert } from "lucid
 import type { DecisionTrace } from "@/lib/schemas/decision-trace";
 import { shortHash } from "@/lib/utils/hash";
 import { StatusPill } from "@/components/shared/StatusPill";
+import { ExplorerValue } from "@/components/shared/ExplorerValue";
+import { traceDetailHref, txExplorerHref } from "@/lib/0g/explorer";
 
 const agentAccent: Record<string, string> = {
   aegis: "border-cyan/30 from-cyan/8",
@@ -15,6 +17,7 @@ const agentAccent: Record<string, string> = {
 export function TraceCard({ trace, compact = false }: { trace: DecisionTrace; compact?: boolean }) {
   const agentKey = trace.agent.name.toLowerCase();
   const accent = agentAccent[agentKey] ?? "border-cyan/30 from-cyan/8";
+  const chainId = trace.attestation?.chainId ?? Number(process.env.NEXT_PUBLIC_0G_CHAIN_ID ?? 16602);
 
   return (
     <motion.article
@@ -47,8 +50,26 @@ export function TraceCard({ trace, compact = false }: { trace: DecisionTrace; co
         </div>
 
         <div className={`mt-4 grid gap-2 ${compact ? "grid-cols-1" : "sm:grid-cols-2"}`}>
-          <InfoLine icon={<Fingerprint className="h-3.5 w-3.5" />} label="Decision hash" value={shortHash(trace.hashes.decisionHash, 8)} />
+          <InfoLine
+            icon={<Fingerprint className="h-3.5 w-3.5" />}
+            label="Decision hash"
+            value={shortHash(trace.hashes.decisionHash, 8)}
+            href={traceDetailHref(trace.traceId)}
+            external={false}
+          />
           <InfoLine icon={<Database className="h-3.5 w-3.5" />} label="0G Storage URI" value={trace.storage?.uri ?? "pending"} />
+          <InfoLine
+            icon={<Network className="h-3.5 w-3.5" />}
+            label="Register tx"
+            value={shortHash(trace.attestation?.txHash ?? "pending", 8)}
+            href={txExplorerHref(trace.attestation?.txHash, chainId)}
+          />
+          <InfoLine
+            icon={<ShieldAlert className="h-3.5 w-3.5" />}
+            label="Storage tx"
+            value={shortHash(trace.storage?.txHash ?? "pending", 8)}
+            href={txExplorerHref(trace.storage?.txHash, chainId)}
+          />
           <InfoLine icon={<Network className="h-3.5 w-3.5" />} label="On-chain trace ID" value={String(trace.attestation?.traceId ?? "pending")} />
           <InfoLine icon={<ShieldAlert className="h-3.5 w-3.5" />} label="Replay result" value={trace.verification.replayResult ?? "not replayed"} />
         </div>
@@ -89,16 +110,36 @@ function AgentAvatar({ name }: { name: string }) {
   );
 }
 
-function InfoLine({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function InfoLine({
+  icon,
+  label,
+  value,
+  href,
+  external = true
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  href?: string;
+  external?: boolean;
+}) {
   return (
     <div className="min-w-0 rounded-lg border border-line/50 bg-black/20 px-3 py-2">
       <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-silver/40">
         <span className="text-cyan/60">{icon}</span>
         {label}
       </div>
-      <p className="mt-0.5 truncate font-mono text-xs text-silver/85" title={value}>
-        {value}
-      </p>
+      {href ? (
+        <div className="mt-1">
+          <ExplorerValue href={href} title={value} className="w-full justify-between px-2 py-1.5" external={external}>
+            {value}
+          </ExplorerValue>
+        </div>
+      ) : (
+        <p className="mt-0.5 truncate font-mono text-xs text-silver/85" title={value}>
+          {value}
+        </p>
+      )}
     </div>
   );
 }

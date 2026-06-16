@@ -16,6 +16,8 @@ import { Shell } from "@/components/shared/Shell";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { TraceCard } from "@/components/shared/TraceCard";
 import { MirrorBackground } from "@/components/fx/MirrorBackground";
+import { ExplorerValue } from "@/components/shared/ExplorerValue";
+import { txExplorerHref } from "@/lib/0g/explorer";
 import {
   ensureStoredAndRegisteredTrace,
   storeAndAttestVerdict,
@@ -325,7 +327,17 @@ function VerdictCard({ verdict }: { verdict: CourtVerdict }) {
           <VerdictMetric label="Verification A" value={verdict.verdict.verificationStatus.traceA} />
           <VerdictMetric label="Verification B" value={verdict.verdict.verificationStatus.traceB} />
           <VerdictMetric label="0G Storage URI" value={verdict.storage?.uri ?? "pending"} wide />
+          <VerdictMetric
+            label="Storage tx"
+            value={shortHash(verdict.storage?.txHash ?? "pending", 8)}
+            href={txExplorerHref(verdict.storage?.txHash, verdict.attestation?.chainId)}
+          />
           <VerdictMetric label="Attestation ID" value={String(verdict.attestation?.verdictId ?? "pending")} />
+          <VerdictMetric
+            label="Attestation tx"
+            value={shortHash(verdict.attestation?.txHash ?? "pending", 8)}
+            href={txExplorerHref(verdict.attestation?.txHash, verdict.attestation?.chainId)}
+          />
           <VerdictMetric label="Verdict root" value={shortHash(verdict.hashes.verdictRoot, 8)} />
         </div>
       </div>
@@ -339,13 +351,31 @@ function VerdictCard({ verdict }: { verdict: CourtVerdict }) {
   );
 }
 
-function VerdictMetric({ label, value, wide = false }: { label: string; value: string; wide?: boolean }) {
+function VerdictMetric({
+  label,
+  value,
+  wide = false,
+  href
+}: {
+  label: string;
+  value: string;
+  wide?: boolean;
+  href?: string;
+}) {
   return (
     <div className={`min-w-0 rounded-xl border border-line/60 bg-black/20 p-3 ${wide ? "sm:col-span-2" : ""}`}>
       <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-silver/40">{label}</p>
-      <p className="mt-1 truncate font-mono text-sm font-semibold text-white" title={value}>
-        {value}
-      </p>
+      {href ? (
+        <div className="mt-1">
+          <ExplorerValue href={href} title={value} className="w-full justify-between px-2 py-1.5">
+            {value}
+          </ExplorerValue>
+        </div>
+      ) : (
+        <p className="mt-1 truncate font-mono text-sm font-semibold text-white" title={value}>
+          {value}
+        </p>
+      )}
     </div>
   );
 }
