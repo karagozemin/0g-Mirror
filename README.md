@@ -4,6 +4,28 @@
 
 0G Mirror records, stores, replays, and attests AI-agent decisions on 0G, so anyone can verify why an agent acted and whether the decision is consistent with its evidence.
 
+## Live 0G Proof
+
+```txt
+Chain ID: 16602
+MirrorRegistry: 0x8c5C403994CC7a5A469bBF82904e504060109858
+Trace ID: 1
+Verification Status: Verified
+Decision Hash: 0x7f1775e02212e8764cefc347a09df82aa33ebe05d377e2bb496fb9c2fe1da884
+
+0G Storage URI:
+0g://0xe58925c613298780175066ae3e2762e6154b152329a3b3c8b532716196ef4aee
+
+Storage Tx:
+0x109b3457bc7a0b0032b1d81bc773f8664c5dbaaa310adb46d73bdb7360757a03
+
+Register Trace Tx:
+0x439d5a8bca2bd17b051738d12124b90a0c5cb3ab5c1cc996a76e45137f3b23de
+
+Verification Status Tx:
+0x7061af685a1c61e3db2ee976034baad35da506b73464a737dace23027eae2515
+```
+
 ## Problem
 
 AI agents are starting to make decisions with real money, user trust, and operational consequences. Today, users cannot reliably prove what input/context an agent used, which model/config/tool path produced the decision, whether evidence can reproduce a similar decision, or whether the decision omitted critical facts.

@@ -14,5 +14,8 @@
     "deploy": "npm run deploy --workspace contracts",
     "deploy:0g": "npm run deploy:0g --workspace contracts",
     "proof:real": "node scripts/create-real-proof.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.0"
   }
 }
