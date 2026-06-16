@@ -11,9 +11,18 @@ export function Notice({
   variant?: "warn" | "success" | "info";
 }) {
   const styles = {
-    warn: "border-warn/30 bg-warn/8 text-warn",
-    success: "border-mint/30 bg-mint/8 text-mint",
-    info: "border-cyan/30 bg-cyan/8 text-cyan"
+    warn: {
+      wrapper: "border-warn/25 bg-[linear-gradient(180deg,rgba(251,191,36,0.1),rgba(251,191,36,0.04))] text-warn",
+      icon: "border-warn/25 bg-warn/12 text-warn"
+    },
+    success: {
+      wrapper: "border-mint/25 bg-[linear-gradient(180deg,rgba(52,211,153,0.1),rgba(52,211,153,0.04))] text-mint",
+      icon: "border-mint/25 bg-mint/12 text-mint"
+    },
+    info: {
+      wrapper: "border-cyan/25 bg-[linear-gradient(180deg,rgba(34,211,238,0.1),rgba(34,211,238,0.04))] text-cyan",
+      icon: "border-cyan/25 bg-cyan/12 text-cyan"
+    }
   };
   const icons = {
     warn: AlertTriangle,
@@ -28,10 +37,12 @@ export function Notice({
         initial={{ opacity: 0, y: -8, height: 0 }}
         animate={{ opacity: 1, y: 0, height: "auto" }}
         exit={{ opacity: 0, y: -8, height: 0 }}
-        className={`flex items-start gap-3 overflow-hidden rounded-xl border px-4 py-3 text-sm ${styles[variant]}`}
+        className={`flex items-start gap-3 overflow-hidden rounded-[22px] border px-4 py-3.5 text-sm shadow-panel backdrop-blur-xl ${styles[variant].wrapper}`}
       >
-        <Icon className="mt-0.5 h-4 w-4 shrink-0" />
-        <span>{children}</span>
+        <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${styles[variant].icon}`}>
+          <Icon className="h-4 w-4" />
+        </div>
+        <span className="leading-relaxed text-silver/90">{children}</span>
       </motion.div>
     </AnimatePresence>
   );

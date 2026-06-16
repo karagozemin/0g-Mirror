@@ -4,20 +4,22 @@ import { motion, type Variants } from "framer-motion";
 import type { ReactNode } from "react";
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 32, scale: 0.985 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.65, ease: [0.16, 1, 0.3, 1] }
+    scale: 1,
+    transition: { delay: i * 0.08, duration: 0.72, ease: [0.16, 1, 0.3, 1] }
   })
 };
 
 const scaleIn: Variants = {
-  hidden: { opacity: 0, scale: 0.92 },
+  hidden: { opacity: 0, y: 10, scale: 0.94 },
   visible: (i: number) => ({
     opacity: 1,
+    y: 0,
     scale: 1,
-    transition: { delay: i * 0.06, duration: 0.55, ease: [0.16, 1, 0.3, 1] }
+    transition: { delay: i * 0.06, duration: 0.58, ease: [0.16, 1, 0.3, 1] }
   })
 };
 
@@ -59,7 +61,7 @@ export function HeroReveal({
     <motion.div
       initial={{ opacity: 0, y: 32 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ delay, duration: 0.86, ease: [0.16, 1, 0.3, 1] }}
       className={className}
     >
       {children}
@@ -80,7 +82,7 @@ export function StaggerChildren({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-20px" }}
+      viewport={{ once: true, margin: "-12px" }}
       variants={{
         hidden: {},
         visible: { transition: { staggerChildren: stagger } }
@@ -96,8 +98,8 @@ export function StaggerItem({ children, className = "" }: { children: ReactNode;
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } }
+        hidden: { opacity: 0, y: 24 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.58, ease: [0.16, 1, 0.3, 1] } }
       }}
       className={className}
     >

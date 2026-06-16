@@ -9,9 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        display: ["var(--font-syne)", "system-ui", "sans-serif"],
-        sans: ["var(--font-syne)", "system-ui", "sans-serif"],
-        mono: ["var(--font-jetbrains)", "ui-monospace", "monospace"]
+        display: ["var(--font-display)", "system-ui", "sans-serif"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"]
       },
       colors: {
         ink: "#030508",
@@ -34,12 +34,14 @@ const config: Config = {
         glow: "0 0 40px rgba(34, 211, 238, 0.22)",
         "glow-lg": "0 0 80px rgba(34, 211, 238, 0.28)",
         "glow-gold": "0 0 40px rgba(251, 191, 36, 0.25)",
+        "glow-soft": "0 0 56px rgba(34, 211, 238, 0.14)",
         panel: "0 24px 80px rgba(0, 0, 0, 0.5)",
+        "panel-strong": "0 30px 100px rgba(0, 0, 0, 0.58)",
         inset: "inset 0 1px 0 rgba(255,255,255,0.06)"
       },
       backgroundImage: {
         "radial-grid":
-          "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34,211,238,0.14), transparent), radial-gradient(ellipse 60% 40% at 90% 20%, rgba(167,139,250,0.08), transparent), linear-gradient(180deg, #030508 0%, #070b14 50%, #030508 100%)",
+          "radial-gradient(ellipse 80% 55% at 50% -12%, rgba(34,211,238,0.14), transparent 55%), radial-gradient(ellipse 42% 30% at 18% 14%, rgba(251,191,36,0.1), transparent 60%), radial-gradient(ellipse 46% 34% at 82% 18%, rgba(52,211,153,0.08), transparent 60%), linear-gradient(180deg, #02040a 0%, #07101b 52%, #02040a 100%)",
         shimmer:
           "linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.08) 50%, transparent 75%)",
         "beam-v":
