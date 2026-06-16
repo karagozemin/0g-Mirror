@@ -30,6 +30,20 @@ Verification Status Tx:
 0x7061af685a1c61e3db2ee976034baad35da506b73464a737dace23027eae2515
 ```
 
+## Screenshots
+
+![0G Mirror landing page](docs/screenshots/01-landing.png)
+
+![Mirror Core Decision Trace](docs/screenshots/02-mirror-decision-trace.png)
+
+![Mirror Core real 0G Storage URI](docs/screenshots/03-mirror-storage-uri.png)
+
+![Mirror Core Verified replay status](docs/screenshots/04-mirror-verified.png)
+
+![Olympus Arena Aegis vs Nyx](docs/screenshots/05-arena-aegis-vs-nyx.png)
+
+![Olympus Court Verdict Card](docs/screenshots/06-olympus-verdict-card.png)
+
 ## Problem
 
 AI agents are starting to make decisions with real money, user trust, and operational consequences. Today, users cannot reliably prove what input/context an agent used, which model/config/tool path produced the decision, whether evidence can reproduce a similar decision, or whether the decision omitted critical facts.
@@ -124,7 +138,7 @@ npm run build
 
 ## Configure 0G Storage
 
-Copy `.env.example` to `.env` and set:
+Copy `.env.example` to `.env.local` at the **repository root** (not `apps/web`) and set:
 
 ```env
 0G_STORAGE_RPC=https://evmrpc-testnet.0g.ai

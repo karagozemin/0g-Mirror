@@ -1,5 +1,6 @@
 import "server-only";
 
+import "@/lib/env/root-env";
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -19,13 +20,19 @@ export class Missing0GConfigError extends Error {
 }
 
 function storageConfig() {
-  const evmRpc = process.env["0G_STORAGE_RPC"] ?? process.env.NEXT_PUBLIC_0G_CHAIN_RPC;
-  const indexerRpc = process.env["0G_STORAGE_INDEXER"];
-  const privateKey = process.env["0G_STORAGE_PRIVATE_KEY"] ?? process.env.PRIVATE_KEY;
+  const evmRpc =
+    process.env["0G_STORAGE_RPC"] ??
+    process.env.OG_STORAGE_RPC ??
+    process.env.NEXT_PUBLIC_0G_CHAIN_RPC;
+  const indexerRpc = process.env["0G_STORAGE_INDEXER"] ?? process.env.OG_STORAGE_INDEXER;
+  const privateKey =
+    process.env["0G_STORAGE_PRIVATE_KEY"] ??
+    process.env.OG_STORAGE_PRIVATE_KEY ??
+    process.env.PRIVATE_KEY;
 
   if (!evmRpc || !indexerRpc || !privateKey) {
     throw new Missing0GConfigError(
-      "Missing 0G Storage config. Set 0G_STORAGE_RPC, 0G_STORAGE_INDEXER, and 0G_STORAGE_PRIVATE_KEY."
+      "Missing 0G Storage config. Set 0G_STORAGE_RPC, 0G_STORAGE_INDEXER, and 0G_STORAGE_PRIVATE_KEY in the repository root .env.local."
     );
   }
 

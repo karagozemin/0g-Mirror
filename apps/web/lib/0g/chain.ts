@@ -1,5 +1,6 @@
 import "server-only";
 
+import "@/lib/env/root-env";
 import { ethers } from "ethers";
 import { MIRROR_REGISTRY_ABI, verificationStatusToEnum } from "@/lib/contracts/MirrorRegistry";
 import type { VerificationStatus } from "@/lib/schemas/decision-trace";
@@ -20,7 +21,7 @@ function chainConfig() {
 
   if (!registryAddress || !rpc || !privateKey) {
     throw new MissingChainConfigError(
-      "Missing chain config. Set NEXT_PUBLIC_MIRROR_REGISTRY_ADDRESS, NEXT_PUBLIC_0G_CHAIN_RPC, NEXT_PUBLIC_0G_CHAIN_ID, and PRIVATE_KEY."
+      "Missing chain config. Set NEXT_PUBLIC_MIRROR_REGISTRY_ADDRESS, NEXT_PUBLIC_0G_CHAIN_RPC, NEXT_PUBLIC_0G_CHAIN_ID, and PRIVATE_KEY in the repository root .env.local."
     );
   }
 
