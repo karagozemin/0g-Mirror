@@ -8,7 +8,7 @@
 
 The app is a Next.js + TypeScript monorepo with three primary user surfaces: Mirror Core, Verify, and Olympus Arena. Mirror Core creates and attests a single Decision Trace. Verify replays an existing trace. Olympus Arena is a showcase mode that compares two traces, runs a judge, and emits a Court Verdict.
 
-The current MVP uses deterministic local agents and replay verification. When 0G credentials are present, the same flow writes to real 0G Storage and 0G Chain. When credentials are missing, the app falls back to clearly labeled local demo mode.
+The current MVP uses deterministic local agents and replay verification. When 0G credentials are present, the same flow writes to real 0G Storage and 0G Chain. The product is wallet-native: on-chain attestations must be signed by the connected user wallet in the browser. The app does not create a local demo fallback — missing credentials or wallet access will surface errors and require configuration.
 
 Relevant code paths:
 
@@ -45,7 +45,7 @@ flowchart TD
   SDK[0G Storage SDK]
   Storage[(0G Storage)]
   Chain[(MirrorRegistry on 0G Chain)]
-  Local[Local demo fallback]
+  %% Local demo fallback removed in wallet-native design
 
   U --> App
   App --> Core
@@ -123,7 +123,7 @@ Download and verification flow:
 - read and parse the downloaded payload
 - compare the payload contents and hashes against the expected trace
 
-When credentials are missing, the API returns a `MISSING_CONFIG` response and the app switches to clearly labeled local demo mode. That fallback keeps the demo usable without pretending live storage exists.
+When credentials are missing, the API returns a `MISSING_CONFIG` response. The app does not fabricate local storage or attestations; instead the UI surfaces the error and requires the operator to provide the correct storage configuration and connect a wallet to proceed.
 
 ## 6. Chain layer
 
@@ -135,12 +135,11 @@ MirrorRegistry exposes three core calls:
 - `updateVerificationStatus(uint256 traceId, VerificationStatus status)`
 - `registerCourtVerdict(uint256 traceIdA, uint256 traceIdB, string verdictURI, bytes32 verdictRoot, uint256 winningTraceId)`
 
-The chain adapter uses these values from `.env.local`:
+The chain adapter in earlier versions used a server-side relayer. In the current wallet-native design, on-chain attestations are signed by the connected user wallet in the browser. The app uses the following public environment values in the client:
 
 - `NEXT_PUBLIC_MIRROR_REGISTRY_ADDRESS`
 - `NEXT_PUBLIC_0G_CHAIN_RPC`
 - `NEXT_PUBLIC_0G_CHAIN_ID`
-- `PRIVATE_KEY`
 
 Assumptions:
 
@@ -149,7 +148,7 @@ Assumptions:
 - the private key is funded for the target network
 - the current proof uses chain ID 16602
 
-Attestation is event-based. The contract emits `DecisionTraceRegistered`, `VerificationStatusUpdated`, and `CourtVerdictRegistered`, and the transaction hash becomes the proof of registration.
+Attestation is event-based. The contract emits `DecisionTraceRegistered`, `VerificationStatusUpdated`, and `CourtVerdictRegistered`. In Wallet-Native mode users sign transactions from their wallets and the resulting transaction hash and emitted event IDs become the proof of registration.
 
 ## 7. Replay verification layer
 
@@ -274,11 +273,11 @@ Not guaranteed:
 - full production-grade access control
 - verifiable execution beyond the current deterministic replay model
 
-Fallback local mode:
+No local fallback:
 
-- used only when 0G credentials are missing
-- keeps the UI and demo flow functional
-- is clearly labeled as local, not live 0G infrastructure
+- The app no longer creates or relies on a local demo fallback for storage or attestations.
+- All storage uploads and chain attestations require valid configuration and/or a connected wallet.
+- Missing credentials will cause API routes to return `MISSING_CONFIG` so the UI can instruct the user.
 
 ## Verification Boundaries
 

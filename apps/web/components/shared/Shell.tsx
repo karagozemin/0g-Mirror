@@ -1,10 +1,12 @@
 "use client";
 
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Sparkles, Swords } from "lucide-react";
+import WalletConnectButton from "@/components/wallet/WalletConnectButton";
 
 const MotionLink = motion(Link);
 
@@ -77,6 +79,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
               Galileo · 16602
             </div>
 
+            {/* Local Preview Mode removed — always prefer connected wallet flow */}
+
             <MotionLink
               href="/mirror"
               whileHover={{ y: -2, scale: 1.015 }}
@@ -99,6 +103,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
               <Swords className="h-4 w-4 text-gold transition group-hover:rotate-12" />
               Arena
             </MotionLink>
+            <div className="ml-2">
+              {/* RainbowKit connect button */}
+              <WalletConnectButton />
+            </div>
           </div>
         </div>
       </header>
@@ -107,3 +115,5 @@ export function Shell({ children }: { children: React.ReactNode }) {
     </main>
   );
 }
+
+

@@ -24,7 +24,7 @@ import { TraceCard } from "@/components/shared/TraceCard";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { OperationProgressPanel, type OperationProgressState } from "@/components/shared/OperationProgressPanel";
 import { MirrorBackground } from "@/components/fx/MirrorBackground";
-import { ensureRegisteredTrace, ensureStoredTrace, updateTraceStatus } from "@/components/shared/client-actions";
+import { ensureStoredTrace, ensureRegisteredTrace, updateTraceStatus } from "@/components/shared/client-actions";
 
 type BusyState = "run" | "store" | "register" | "verify" | null;
 const RUN_DECISION_DELAY_MS = 2400;
@@ -179,11 +179,13 @@ export function MirrorClient() {
       setNotice("Decision already verified.");
       return;
     }
+
     setBusy("verify");
     setNotice(null);
     setOperationStep(1, "verify", "Replaying decision", "Applying the verifier to the current trace.");
     await pause(140);
     const verified = applyVerification(trace);
+
     const result = await updateTraceStatus(verified);
     saveTrace(result.trace);
     setTrace(result.trace);
@@ -201,6 +203,7 @@ export function MirrorClient() {
       "Replay complete",
       result.notice ?? `Verification status: ${result.trace.verification.status}.`
     );
+
     setBusy(null);
   }
 

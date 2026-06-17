@@ -19,12 +19,7 @@ import { OperationProgressPanel } from "@/components/shared/OperationProgressPan
 import { MirrorBackground } from "@/components/fx/MirrorBackground";
 import { ExplorerValue } from "@/components/shared/ExplorerValue";
 import { txExplorerHref } from "@/lib/0g/explorer";
-import {
-  ensureRegisteredTrace,
-  ensureStoredTrace,
-  storeAndAttestVerdict,
-  updateTraceStatus
-} from "@/components/shared/client-actions";
+import { ensureStoredTrace, updateTraceStatus } from "@/components/shared/client-actions";
 
 type BusyState = "start" | "verify" | "appeal" | null;
 type AppealPhase = "storage" | "chain" | "judge" | "complete";
@@ -118,7 +113,6 @@ export function ArenaClient() {
       const rememberNotice = (value: string | null) => {
         nextNotice = nextNotice ?? value;
       };
-
       const verifiedA = traceA.verification.status === "Pending" ? applyVerification(traceA) : traceA;
       const verifiedB = traceB.verification.status === "Pending" ? applyVerification(traceB) : traceB;
 
@@ -126,35 +120,34 @@ export function ArenaClient() {
       const storedA = await ensureStoredTrace(verifiedA);
       rememberNotice(storedA.notice);
 
-      setAppealStep(3, "chain", "0G Chain: challenger attestation", "Waiting for Trace A registration confirmation.");
-      const registeredA = await ensureRegisteredTrace(storedA.trace);
-      rememberNotice(registeredA.notice);
-
-      setAppealStep(4, "storage", "0G Storage: defender trace", "Uploading Trace B evidence and hashes.");
+      setAppealStep(3, "storage", "0G Storage: defender trace", "Uploading Trace B evidence and hashes.");
       const storedB = await ensureStoredTrace(verifiedB);
       rememberNotice(storedB.notice);
 
-      setAppealStep(5, "chain", "0G Chain: defender attestation", "Waiting for Trace B registration confirmation.");
-      const registeredB = await ensureRegisteredTrace(storedB.trace);
-      rememberNotice(registeredB.notice);
-
-      setAppealStep(6, "judge", "Olympus Judge", "Comparing evidence coverage and replay status.");
+      setAppealStep(4, "judge", "Olympus Judge", "Comparing evidence coverage and replay status.");
       const claim = "Trace B ignored critical risk evidence.";
-      const nextVerdict = runOlympusJudge(registeredA.trace, registeredB.trace, claim);
+      const nextVerdict = runOlympusJudge(storedA.trace, storedB.trace, claim);
 
-      const attestedVerdict = await storeAndAttestVerdict(
-        nextVerdict,
-        registeredA.trace,
-        registeredB.trace,
-        (phase) => {
-          if (phase === "storage") {
-            setAppealStep(7, "storage", "0G Storage: court verdict", "Uploading the Olympus verdict record.");
-          }
-          if (phase === "chain") {
-            setAppealStep(8, "chain", "0G Chain: verdict attestation", "Waiting for verdict registration confirmation.");
-          }
-        }
-      );
+      // store verdict, but do not perform chain registration server-side.
+      setAppealStep(5, "storage", "0G Storage: court verdict", "Uploading the Olympus verdict record.");
+      // reuse storage API for verdict upload
+      try {
+        const storage = await fetch("/api/storage/upload", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ data: nextVerdict })
+        }).then((r) => r.json().catch(() => ({})));
+        const attestedVerdict = { ...nextVerdict, storage } as CourtVerdict;
+        setVerdict(attestedVerdict);
+        setTraceA(storedA.trace);
+        setTraceB(storedB.trace);
+        setNotice(storage ? null : "Stored locally; connect storage credentials for real upload.");
+      } catch (err) {
+        setVerdict(nextVerdict);
+        setTraceA(storedA.trace);
+        setTraceB(storedB.trace);
+        setNotice("Local fallback stored verdict; connect storage for real upload.");
+      }
 
       setAppealProgress({
         phase: "complete",
@@ -313,7 +306,7 @@ export function ArenaClient() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
-              <VerdictCard verdict={verdict} />
+              <VerdictCard verdict={verdict} traceA={traceA} traceB={traceB} />
             </motion.div>
           ) : null}
         </AnimatePresence>

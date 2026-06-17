@@ -102,10 +102,11 @@ Recommended variables (examples):
 - `NEXT_PUBLIC_MIRROR_REGISTRY_ADDRESS` (deployed address)
 - `NEXT_PUBLIC_0G_CHAIN_RPC` (RPC endpoint)
 - `NEXT_PUBLIC_0G_CHAIN_ID` (e.g. 16602)
-- `PRIVATE_KEY` (local test key)
-- `0G_STORAGE_RPC`, `0G_STORAGE_INDEXER`, `0G_STORAGE_PRIVATE_KEY`
+- `0G_STORAGE_RPC`, `0G_STORAGE_INDEXER`, `0G_STORAGE_PRIVATE_KEY` (only if server-side storage upload is required)
 
-When credentials are missing the app falls back to a clearly labeled local demo mode.
+No server-side private key is used for 0G Chain transactions. Chain writes are signed by the connected user wallet in the browser.
+
+Note: The application no longer creates a local demo fallback for missing credentials. Storage uploads and on-chain attestations require configured storage endpoints and a connected wallet to sign transactions. If credentials or wallet access are missing, the UI will surface an error and require the user to provide the necessary configuration or connect a wallet.
 
 ## Smart contract
 

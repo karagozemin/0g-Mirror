@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Manrope, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { OpenLinksInNewTab } from "@/components/shared/OpenLinksInNewTab";
+import WalletProvider from "@/components/wallet/WalletProvider";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
@@ -39,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         <div className="noise" aria-hidden="true" />
         <OpenLinksInNewTab />
-        {children}
+        <WalletProvider>{children}</WalletProvider>
       </body>
     </html>
   );
