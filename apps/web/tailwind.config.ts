@@ -18,9 +18,11 @@ const config: Config = {
         void: "#070b14",
         panel: "rgba(9, 14, 26, 0.82)",
         line: "rgba(148, 180, 255, 0.12)",
-        "line-bright": "rgba(103, 232, 249, 0.35)",
+        "line-bright": "rgba(168, 85, 247, 0.35)",
         silver: "#c8d8f8",
         chrome: "#e2ebff",
+        beam: "#a855f7",
+        "beam-dim": "#7c3aed",
         cyan: "#22d3ee",
         "cyan-dim": "#0891b2",
         gold: "#fbbf24",
@@ -28,24 +30,24 @@ const config: Config = {
         mint: "#34d399",
         danger: "#f87171",
         warn: "#fbbf24",
-        arena: "#a78bfa"
+        arena: "#c084fc"
       },
       boxShadow: {
-        glow: "0 0 40px rgba(34, 211, 238, 0.22)",
-        "glow-lg": "0 0 80px rgba(34, 211, 238, 0.28)",
+        glow: "0 0 40px rgba(168, 85, 247, 0.22)",
+        "glow-lg": "0 0 80px rgba(168, 85, 247, 0.28)",
         "glow-gold": "0 0 40px rgba(251, 191, 36, 0.25)",
-        "glow-soft": "0 0 56px rgba(34, 211, 238, 0.14)",
+        "glow-soft": "0 0 56px rgba(168, 85, 247, 0.14)",
         panel: "0 24px 80px rgba(0, 0, 0, 0.5)",
         "panel-strong": "0 30px 100px rgba(0, 0, 0, 0.58)",
         inset: "inset 0 1px 0 rgba(255,255,255,0.06)"
       },
       backgroundImage: {
         "radial-grid":
-          "radial-gradient(ellipse 80% 55% at 50% -12%, rgba(34,211,238,0.14), transparent 55%), radial-gradient(ellipse 42% 30% at 18% 14%, rgba(251,191,36,0.1), transparent 60%), radial-gradient(ellipse 46% 34% at 82% 18%, rgba(52,211,153,0.08), transparent 60%), linear-gradient(180deg, #02040a 0%, #07101b 52%, #02040a 100%)",
+          "radial-gradient(ellipse 80% 55% at 50% -12%, rgba(168,85,247,0.14), transparent 55%), radial-gradient(ellipse 42% 30% at 18% 14%, rgba(124,58,237,0.1), transparent 60%), radial-gradient(ellipse 46% 34% at 82% 18%, rgba(76,29,149,0.08), transparent 60%), linear-gradient(180deg, #02040a 0%, #090412 52%, #02040a 100%)",
         shimmer:
           "linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.08) 50%, transparent 75%)",
         "beam-v":
-          "linear-gradient(180deg, transparent, rgba(34,211,238,0.9) 45%, rgba(34,211,238,0.9) 55%, transparent)"
+          "linear-gradient(180deg, transparent, rgba(168,85,247,0.9) 45%, rgba(168,85,247,0.9) 55%, transparent)"
       },
       animation: {
         "fade-up": "fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards",

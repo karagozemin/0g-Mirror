@@ -13,7 +13,7 @@ type ButtonProps = Omit<HTMLMotionProps<"button">, "children"> & {
 
 const variants = {
   primary:
-    "border-cyan/35 bg-[linear-gradient(135deg,rgba(34,211,238,0.18),rgba(8,145,178,0.14))] text-white shadow-[0_0_34px_rgba(34,211,238,0.18)] hover:border-cyan/65 hover:bg-[linear-gradient(135deg,rgba(34,211,238,0.22),rgba(8,145,178,0.18))] hover:shadow-[0_0_52px_rgba(34,211,238,0.24)]",
+    "border-beam/35 bg-[linear-gradient(135deg,rgba(168,85,247,0.2),rgba(76,29,149,0.16))] text-white shadow-[0_0_34px_rgba(168,85,247,0.2)] hover:border-beam/65 hover:bg-[linear-gradient(135deg,rgba(168,85,247,0.24),rgba(76,29,149,0.2))] hover:shadow-[0_0_52px_rgba(168,85,247,0.26)]",
   secondary: "border-white/10 bg-white/[0.04] text-silver hover:border-white/18 hover:bg-white/[0.06]",
   ghost: "border-transparent bg-transparent text-silver/72 hover:bg-white/[0.05] hover:text-white",
   danger:

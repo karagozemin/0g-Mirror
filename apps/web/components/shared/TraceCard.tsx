@@ -9,14 +9,14 @@ import { ExplorerValue } from "@/components/shared/ExplorerValue";
 import { traceDetailHref, txExplorerHref } from "@/lib/0g/explorer";
 
 const agentAccent: Record<string, string> = {
-  aegis: "border-cyan/30 from-cyan/8",
+  aegis: "border-beam/30 from-beam/8",
   nyx: "border-danger/30 from-danger/8",
   hermes: "border-mint/30 from-mint/8"
 };
 
 export function TraceCard({ trace, compact = false }: { trace: DecisionTrace; compact?: boolean }) {
   const agentKey = trace.agent.name.toLowerCase();
-  const accent = agentAccent[agentKey] ?? "border-cyan/30 from-cyan/8";
+  const accent = agentAccent[agentKey] ?? "border-beam/30 from-beam/8";
   const chainId = trace.attestation?.chainId ?? Number(process.env.NEXT_PUBLIC_0G_CHAIN_ID ?? 16602);
 
   return (
@@ -40,7 +40,7 @@ export function TraceCard({ trace, compact = false }: { trace: DecisionTrace; co
 
         <div className="mt-5 rounded-xl border border-line bg-black/30 p-4">
           <div className="flex items-center gap-2 text-sm font-semibold text-white">
-            <CheckCircle2 className="h-4 w-4 text-cyan" />
+            <CheckCircle2 className="h-4 w-4 text-beam" />
             {trace.decision.label}
           </div>
           <p className="mt-2 text-sm leading-relaxed text-silver/80">{trace.decision.output}</p>
@@ -79,7 +79,7 @@ export function TraceCard({ trace, compact = false }: { trace: DecisionTrace; co
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-silver/40">Evidence Used</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {trace.evidence.map((item) => (
-                <div key={`${item.name}-${item.value}`} className="rounded-lg border border-line/60 bg-white/[0.02] px-3 py-2.5 transition hover:border-cyan/20 hover:bg-white/[0.04]">
+                <div key={`${item.name}-${item.value}`} className="rounded-lg border border-line/60 bg-white/[0.02] px-3 py-2.5 transition hover:border-beam/20 hover:bg-white/[0.04]">
                   <p className="font-mono text-[10px] uppercase tracking-wider text-silver/40">{item.type}</p>
                   <p className="text-sm font-medium text-white">
                     {item.name}: <span className="font-mono text-silver/70">{item.value}</span>
@@ -97,7 +97,7 @@ export function TraceCard({ trace, compact = false }: { trace: DecisionTrace; co
 function AgentAvatar({ name }: { name: string }) {
   const id = name.toLowerCase();
   const colors: Record<string, string> = {
-    aegis: "from-cyan/30 to-cyan/5 border-cyan/40 text-cyan",
+    aegis: "from-beam/30 to-beam/5 border-beam/40 text-beam",
     nyx: "from-danger/30 to-danger/5 border-danger/40 text-danger",
     hermes: "from-mint/30 to-mint/5 border-mint/40 text-mint"
   };
@@ -126,7 +126,7 @@ function InfoLine({
   return (
     <div className="min-w-0 rounded-lg border border-line/50 bg-black/20 px-3 py-2">
       <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-silver/40">
-        <span className="text-cyan/60">{icon}</span>
+        <span className="text-silver/55">{icon}</span>
         {label}
       </div>
       {href ? (

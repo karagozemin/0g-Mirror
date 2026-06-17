@@ -114,7 +114,7 @@ export function MirrorClient() {
         <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="font-mono text-xs uppercase tracking-[0.28em] text-cyan/70">0G Mirror Core</p>
+              <p className="font-mono text-xs uppercase tracking-[0.28em] text-beam/70">0G Mirror Core</p>
               <h1 className="mt-3 font-display text-4xl font-bold text-white sm:text-5xl">
                 Create a Decision Trace
               </h1>
@@ -143,11 +143,11 @@ export function MirrorClient() {
                       done
                         ? "done border-mint/40 bg-mint/10 text-mint"
                         : active
-                          ? "active border-cyan/40 bg-cyan/10 text-cyan"
+                          ? "active border-beam/40 bg-beam/10 text-beam"
                           : "border-line bg-white/[0.02] text-silver/40"
                     }`}
                   >
-                    <span className={`step-dot h-2 w-2 rounded-full ${done ? "bg-mint" : active ? "bg-cyan" : "bg-silver/20"}`} />
+                    <span className={`step-dot h-2 w-2 rounded-full ${done ? "bg-mint" : active ? "bg-beam" : "bg-silver/20"}`} />
                     {step.label}
                   </div>
                   {i < pipeline.length - 1 ? (
@@ -172,7 +172,7 @@ export function MirrorClient() {
             <div className="min-w-0">
               <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-silver/40">Selected run</p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-cyan/25 bg-cyan/10 px-3 py-1 text-sm font-semibold text-cyan">
+                <span className="rounded-full border border-beam/25 bg-beam/10 px-3 py-1 text-sm font-semibold text-beam">
                   {selectedAgent.name}
                 </span>
                 <ChevronRight className="h-4 w-4 text-silver/25" />
@@ -201,7 +201,7 @@ export function MirrorClient() {
           <div className="space-y-5">
             <div className="glass rounded-2xl p-5">
               <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-silver/45">
-                <ShieldCheck className="h-4 w-4 text-cyan" />
+                <ShieldCheck className="h-4 w-4 text-beam" />
                 Choose Agent
               </div>
               <div className="mt-4 grid gap-3">
@@ -293,7 +293,7 @@ export function MirrorClient() {
                     </div>
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-silver/45">
                       <span className="font-mono text-xs">Stored · Verified · Attested</span>
-                      <Link href={`/verify/${trace.traceId}`} className="font-semibold text-cyan transition hover:text-cyan/75">
+                      <Link href={`/verify/${trace.traceId}`} className="font-semibold text-beam transition hover:text-beam/75">
                         Open verifier →
                       </Link>
                     </div>
@@ -310,9 +310,9 @@ export function MirrorClient() {
                     <motion.div
                       animate={{ rotate: [0, 5, -5, 0], scale: [1, 1.05, 1] }}
                       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                      className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan/30 bg-cyan/10"
+                      className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-beam/30 bg-beam/10"
                     >
-                      <FileJson className="h-7 w-7 text-cyan" />
+                      <FileJson className="h-7 w-7 text-beam" />
                     </motion.div>
                     <h2 className="mt-6 font-display text-2xl font-bold text-white">Awaiting decision</h2>
                     <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-silver/55">
@@ -347,14 +347,14 @@ function DecisionLoadingCard({ agentName, taskTitle }: { agentName: string; task
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1.15, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 rounded-full border-2 border-cyan/10 border-t-cyan border-r-gold shadow-[0_0_34px_rgba(34,211,238,0.18)]"
+            className="absolute inset-0 rounded-full border-2 border-beam/10 border-t-beam border-r-beam shadow-[0_0_34px_rgba(168,85,247,0.18)]"
           />
           <motion.div
             animate={{ scale: [0.88, 1.04, 0.88], opacity: [0.65, 1, 0.65] }}
             transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
-            className="flex h-16 w-16 items-center justify-center rounded-full border border-cyan/30 bg-cyan/10"
+            className="flex h-16 w-16 items-center justify-center rounded-full border border-beam/30 bg-beam/10"
           >
-            <FileJson className="h-7 w-7 text-cyan" />
+            <FileJson className="h-7 w-7 text-beam" />
           </motion.div>
         </div>
         <h2 className="mt-6 font-display text-2xl font-bold text-white">Generating Decision Trace</h2>

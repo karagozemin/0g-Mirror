@@ -5,8 +5,8 @@ const styles: Record<VerificationStatus | "Local" | "OnChain", { class: string; 
   Verified: { class: "border-mint/30 bg-mint/10 text-mint", pulse: true },
   Inconsistent: { class: "border-danger/30 bg-danger/10 text-danger", pulse: true },
   MissingEvidence: { class: "border-warn/30 bg-warn/10 text-warn" },
-  Local: { class: "border-warn/30 bg-warn/10 text-warn" },
-  OnChain: { class: "border-cyan/30 bg-cyan/10 text-cyan", pulse: true }
+  Local: { class: "border-white/10 bg-white/[0.04] text-silver/70" },
+  OnChain: { class: "border-beam/30 bg-beam/10 text-beam", pulse: true }
 };
 
 export function StatusPill({ status }: { status: VerificationStatus | "Local" | "OnChain" }) {

@@ -22,9 +22,9 @@ import { Shell } from "@/components/shared/Shell";
 const MotionLink = motion(Link);
 
 const stats = [
-  { value: "Verified", label: "Trace #1 on Galileo", accent: "text-mint" },
-  { value: "0G", label: "Storage + Chain attested", accent: "text-cyan" },
-  { value: "Replay", label: "Consistent decision path", accent: "text-gold" }
+  { value: "Verified", label: "Trace #1 on Galileo", accent: "text-beam" },
+  { value: "0G", label: "Storage + Chain attested", accent: "text-chrome" },
+  { value: "Replay", label: "Consistent decision path", accent: "text-chrome" }
 ];
 
 const problem = [
@@ -38,7 +38,7 @@ const zeroG = [
     icon: Database,
     title: "0G Storage",
     copy: "Decision Trace JSON and Court Verdict JSON uploaded as verifiable payloads.",
-    color: "text-cyan border-cyan/30 bg-cyan/10"
+    color: "text-beam border-beam/30 bg-beam/10"
   },
   {
     icon: Network,
@@ -50,7 +50,7 @@ const zeroG = [
     icon: FileCheck2,
     title: "Replay Verifier",
     copy: "Public evidence re-scored to classify Verified, Inconsistent, or Missing Evidence.",
-    color: "text-mint border-mint/30 bg-mint/10"
+    color: "text-chrome border-white/10 bg-white/[0.03]"
   }
 ];
 
@@ -75,12 +75,12 @@ export function LandingPage() {
           <div className="grid items-center gap-12 lg:grid-cols-[1fr_auto]">
             <div>
               <HeroReveal delay={0}>
-                <div className="inline-flex items-center gap-2 rounded-full border border-cyan/25 bg-cyan/8 px-4 py-1.5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-beam/25 bg-beam/8 px-4 py-1.5">
                   <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-60" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan" />
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-beam opacity-60" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-beam" />
                   </span>
-                  <span className="font-mono text-xs uppercase tracking-[0.2em] text-cyan">Live on Galileo Testnet</span>
+                  <span className="font-mono text-xs uppercase tracking-[0.2em] text-beam">Live on Galileo Testnet</span>
                 </div>
               </HeroReveal>
 
@@ -106,7 +106,7 @@ export function LandingPage() {
                     whileHover={{ y: -3, scale: 1.015 }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 520, damping: 28 }}
-                    className="btn-shimmer group inline-flex min-h-13 items-center gap-3 rounded-2xl border border-cyan/50 bg-cyan/12 px-7 py-4 text-base font-bold text-white shadow-glow transition hover:border-cyan/80 hover:shadow-glow-lg"
+                    className="btn-shimmer group inline-flex min-h-13 items-center gap-3 rounded-2xl border border-beam/50 bg-beam/12 px-7 py-4 text-base font-bold text-white shadow-glow transition hover:border-beam/80 hover:shadow-glow-lg"
                   >
                     <Zap className="h-5 w-5 transition group-hover:scale-110" />
                     Launch Mirror Core
@@ -143,7 +143,7 @@ export function LandingPage() {
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                 className="relative"
               >
-                <div className="absolute -inset-8 rounded-full bg-cyan/10 blur-3xl" />
+                <div className="absolute -inset-8 rounded-full bg-beam/10 blur-3xl" />
                 <div className="logo-hero relative flex items-center justify-center">
                   <div className="logo-hero-frame">
                     <Image
@@ -168,7 +168,7 @@ export function LandingPage() {
       <section className="relative border-b border-line px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <Reveal>
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-cyan/70">Choose your path</p>
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-beam/70">Choose your path</p>
             <h2 className="mt-3 font-display text-4xl font-bold text-white">Two modes. One proof layer.</h2>
           </Reveal>
 
@@ -179,7 +179,7 @@ export function LandingPage() {
               title="Mirror Core"
               subtitle="Decision Trace Registry"
               description="Select an agent, run a decision, store on 0G, register on-chain, and verify by replay."
-              accent="cyan"
+              accent="beam"
               delay={0}
             />
             <ModeCard
@@ -188,7 +188,7 @@ export function LandingPage() {
               title="Olympus Arena"
               subtitle="Agent vs Agent · Court Verdict"
               description="Two agents battle on the same challenge. Mirror records both traces. Olympus judges the appeal."
-              accent="gold"
+              accent="neutral"
               delay={0.1}
             />
           </div>
@@ -245,7 +245,7 @@ export function LandingPage() {
       <section className="border-y border-line bg-white/[0.015] px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <Reveal>
-            <p className="font-mono text-xs uppercase tracking-[0.26em] text-cyan/70">Infrastructure</p>
+            <p className="font-mono text-xs uppercase tracking-[0.26em] text-silver/70">Infrastructure</p>
             <h2 className="mt-3 font-display text-4xl font-bold text-white">Built on 0G. Proven on-chain.</h2>
           </Reveal>
           <StaggerChildren className="mt-10 grid gap-5 md:grid-cols-3" stagger={0.12}>
@@ -279,11 +279,11 @@ export function LandingPage() {
                 <StaggerItem key={step}>
                   <div className="pipeline-step flex items-start gap-4">
                     <div className="flex flex-col items-center">
-                      <div className="step-dot flex h-9 w-9 items-center justify-center rounded-full border border-cyan/40 bg-cyan/10 font-mono text-xs font-bold text-cyan">
+                      <div className="step-dot flex h-9 w-9 items-center justify-center rounded-full border border-beam/40 bg-beam/10 font-mono text-xs font-bold text-beam">
                         {i + 1}
                       </div>
                       {i < steps.length - 1 ? (
-                        <div className="my-1 h-8 w-px bg-gradient-to-b from-cyan/40 to-transparent" />
+                        <div className="my-1 h-8 w-px bg-gradient-to-b from-beam/40 to-transparent" />
                       ) : null}
                     </div>
                     <div className="pb-6 pt-1.5">
@@ -297,7 +297,7 @@ export function LandingPage() {
             <Reveal index={2} variant="scaleIn">
               <div className="border-animated overflow-hidden rounded-2xl">
                 <div className="glass p-8 text-center">
-                  <Swords className="mx-auto h-10 w-10 text-gold" />
+                  <Swords className="mx-auto h-10 w-10 text-beam" />
                   <h3 className="mt-4 font-display text-2xl font-bold text-white">Aegis vs Nyx</h3>
                   <p className="mt-2 text-sm text-silver/60">
                     Two agents. Same DeFi vault challenge. Mirror records both Decision Traces. Olympus reviews the dispute with public evidence.
@@ -307,7 +307,7 @@ export function LandingPage() {
                     whileHover={{ y: -2, scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 520, damping: 28 }}
-                    className="btn-shimmer mt-6 inline-flex items-center gap-2 rounded-xl border border-gold/45 bg-gold/10 px-6 py-3 text-sm font-bold text-white transition hover:border-gold/70"
+                    className="btn-shimmer mt-6 inline-flex items-center gap-2 rounded-xl border border-beam/45 bg-beam/10 px-6 py-3 text-sm font-bold text-white transition hover:border-beam/70"
                   >
                     Start the battle <ArrowRight className="h-4 w-4" />
                   </MotionLink>
@@ -331,7 +331,7 @@ export function LandingPage() {
               whileHover={{ y: -3, scale: 1.015 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 520, damping: 28 }}
-              className="btn-shimmer mt-8 inline-flex items-center gap-2 rounded-2xl border border-cyan/50 bg-cyan/12 px-8 py-4 text-base font-bold text-white shadow-glow transition hover:shadow-glow-lg"
+              className="btn-shimmer mt-8 inline-flex items-center gap-2 rounded-2xl border border-beam/50 bg-beam/12 px-8 py-4 text-base font-bold text-white shadow-glow transition hover:shadow-glow-lg"
             >
               <Zap className="h-5 w-5" />
               Launch Mirror Core
@@ -357,12 +357,12 @@ function ModeCard({
   title: string;
   subtitle: string;
   description: string;
-  accent: "cyan" | "gold";
+  accent: "beam" | "neutral";
   delay: number;
 }) {
   const colors = {
-    cyan: "border-cyan/30 hover:border-cyan/55 hover:shadow-glow group-hover:text-cyan",
-    gold: "border-gold/30 hover:border-gold/55 hover:shadow-glow-gold group-hover:text-gold"
+    beam: "border-beam/30 hover:border-beam/55 hover:shadow-glow group-hover:text-beam",
+    neutral: "border-white/10 hover:border-white/18 hover:bg-white/[0.05] group-hover:text-white"
   };
 
   return (

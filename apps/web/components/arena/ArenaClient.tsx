@@ -38,7 +38,7 @@ type AppealProgress = {
 const APPEAL_STEP_TOTAL = 8;
 
 const agentStyles: Record<AgentId, { gradient: string; border: string; text: string }> = {
-  aegis: { gradient: "from-cyan/20 to-cyan/5", border: "border-cyan/40", text: "text-cyan" },
+  aegis: { gradient: "from-beam/20 to-beam/5", border: "border-beam/40", text: "text-beam" },
   nyx: { gradient: "from-danger/20 to-danger/5", border: "border-danger/40", text: "text-danger" },
   hermes: { gradient: "from-mint/20 to-mint/5", border: "border-mint/40", text: "text-mint" }
 };
@@ -342,7 +342,7 @@ function AppealProgressPanel({ progress }: { progress: AppealProgress }) {
           initial={false}
           animate={{ width: `${progress.percent}%` }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="h-full rounded-full bg-gradient-to-r from-gold via-cyan to-mint shadow-[0_0_20px_rgba(251,191,36,0.32)]"
+          className="h-full rounded-full bg-gradient-to-r from-gold via-beam to-gold shadow-[0_0_20px_rgba(251,191,36,0.32)]"
         />
       </div>
     </motion.div>

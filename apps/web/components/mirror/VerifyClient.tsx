@@ -52,7 +52,7 @@ export function VerifyClient({ traceId }: { traceId: string }) {
             whileHover={{ x: -2 }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 520, damping: 28 }}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-cyan transition hover:text-cyan/75"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-beam transition hover:text-beam/75"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Mirror
@@ -60,7 +60,7 @@ export function VerifyClient({ traceId }: { traceId: string }) {
 
           <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="font-mono text-xs uppercase tracking-[0.28em] text-cyan/70">Trace Verifier</p>
+              <p className="font-mono text-xs uppercase tracking-[0.28em] text-beam/70">Trace Verifier</p>
               <h1 className="mt-3 font-display text-4xl font-bold text-white">Replay Decision Trace</h1>
               <p className="mt-2 font-mono text-sm text-silver/45">ID: {traceId}</p>
             </div>

@@ -32,11 +32,11 @@ export function LiveTicker() {
             whileHover={item.href ? { y: -1, scale: 1.01 } : undefined}
             whileTap={item.href ? { scale: 0.985 } : undefined}
             transition={{ type: "spring", stiffness: 520, damping: 30 }}
-            className={`mx-3 inline-flex items-center gap-3 rounded-full border px-4 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] ${item.href ? "border-cyan/20 bg-cyan/8 text-cyan hover:border-cyan/35 hover:bg-cyan/12" : "border-white/10 bg-white/[0.04] text-silver/80"}`}
+            className={`mx-3 inline-flex items-center gap-3 rounded-full border px-4 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] ${item.href ? "border-white/10 bg-white/[0.04] text-white/85 hover:border-beam/35 hover:bg-white/[0.06]" : "border-white/10 bg-white/[0.04] text-silver/80"}`}
           >
             <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-silver/45">{item.label}</span>
             <span className={`font-mono text-sm ${item.href ? "text-white/92" : "text-white/88"}`}>{item.value}</span>
-            <span className={`h-1.5 w-1.5 rounded-full ${item.href ? "bg-cyan shadow-[0_0_12px_rgba(34,211,238,0.65)]" : "bg-white/40"}`} />
+            <span className={`h-1.5 w-1.5 rounded-full ${item.href ? "bg-gold shadow-[0_0_12px_rgba(251,191,36,0.55)]" : "bg-white/40"}`} />
           </motion.a>
         ))}
       </div>

@@ -12,16 +12,16 @@ export function Notice({
 }) {
   const styles = {
     warn: {
-      wrapper: "border-warn/25 bg-[linear-gradient(180deg,rgba(251,191,36,0.1),rgba(251,191,36,0.04))] text-warn",
-      icon: "border-warn/25 bg-warn/12 text-warn"
+      wrapper: "border-beam/25 bg-[linear-gradient(180deg,rgba(168,85,247,0.1),rgba(76,29,149,0.05))] text-silver",
+      icon: "border-beam/25 bg-beam/12 text-beam"
     },
     success: {
-      wrapper: "border-mint/25 bg-[linear-gradient(180deg,rgba(52,211,153,0.1),rgba(52,211,153,0.04))] text-mint",
-      icon: "border-mint/25 bg-mint/12 text-mint"
+      wrapper: "border-beam/25 bg-[linear-gradient(180deg,rgba(168,85,247,0.1),rgba(76,29,149,0.05))] text-silver",
+      icon: "border-beam/25 bg-beam/12 text-beam"
     },
     info: {
-      wrapper: "border-cyan/25 bg-[linear-gradient(180deg,rgba(34,211,238,0.1),rgba(34,211,238,0.04))] text-cyan",
-      icon: "border-cyan/25 bg-cyan/12 text-cyan"
+      wrapper: "border-beam/25 bg-[linear-gradient(180deg,rgba(168,85,247,0.1),rgba(76,29,149,0.05))] text-silver",
+      icon: "border-beam/25 bg-beam/12 text-beam"
     }
   };
   const icons = {

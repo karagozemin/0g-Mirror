@@ -23,9 +23,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
       <header className="sticky top-3 z-50 px-3 sm:px-4 lg:px-6">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 rounded-[28px] border border-white/10 bg-[rgba(5,9,16,0.78)] px-4 py-3 shadow-panel-strong backdrop-blur-2xl sm:flex-row sm:items-center">
-          <Link href="/" className="group flex items-center gap-3 shrink-0">
+          <Link href="/" className="group flex shrink-0 items-center gap-3">
             <motion.div
-              className="logo-wrap p-1.5 rounded-lg bg-white/[0.03] ring-1 ring-white/6 shadow-[0_10px_40px_rgba(34,211,238,0.06)]"
+              className="logo-wrap rounded-lg bg-white/[0.03] p-1.5 ring-1 ring-white/6 shadow-[0_10px_40px_rgba(168,85,247,0.06)]"
               whileHover={{ y: -1 }}
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
             >
@@ -39,7 +39,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               />
             </motion.div>
             <div className="hidden md:block">
-              <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-cyan/60">Proof layer</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-silver/60">Proof layer</p>
               <p className="text-sm font-semibold text-white/90">Mirror / Olympus / Verify</p>
             </div>
           </Link>
@@ -58,7 +58,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
                   {active ? (
                     <motion.span
                       layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full border border-cyan/30 bg-cyan/10 shadow-[0_0_30px_rgba(34,211,238,0.12)]"
+                      className="absolute inset-0 rounded-full border border-beam/30 bg-beam/10 shadow-[0_0_30px_rgba(168,85,247,0.12)]"
                       transition={{ type: "spring", stiffness: 420, damping: 34 }}
                     />
                   ) : null}
@@ -71,8 +71,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-3 sm:ml-auto">
             <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-silver/55 xl:flex">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint opacity-60" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-mint" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-beam opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-beam" />
               </span>
               Galileo · 16602
             </div>
@@ -82,9 +82,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
               whileHover={{ y: -2, scale: 1.015 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 520, damping: 28 }}
-              className="btn-shimmer group inline-flex items-center gap-2 rounded-2xl border border-cyan/35 bg-cyan/12 px-4 py-2.5 text-sm font-semibold text-white shadow-glow-soft transition hover:border-cyan/60 hover:bg-cyan/16"
+              className="btn-shimmer group inline-flex items-center gap-2 rounded-2xl border border-beam/35 bg-beam/12 px-4 py-2.5 text-sm font-semibold text-white shadow-glow-soft transition hover:border-beam/60 hover:bg-beam/16"
             >
-              <Sparkles className="h-4 w-4 text-cyan transition group-hover:rotate-12" />
+              <Sparkles className="h-4 w-4 text-beam transition group-hover:rotate-12" />
               Mirror Core
               <ArrowUpRight className="h-3.5 w-3.5 opacity-60 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </MotionLink>
@@ -102,6 +102,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
+
       {children}
     </main>
   );

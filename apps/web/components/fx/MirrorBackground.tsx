@@ -4,20 +4,20 @@ export function MirrorBackground({ variant = "default" }: { variant?: "default" 
   const palette =
     variant === "arena"
       ? {
-          primary: "rgba(251,191,36,0.15)",
-          secondary: "rgba(251,146,60,0.1)",
-          tertiary: "rgba(34,211,238,0.05)"
+          primary: "rgba(168,85,247,0.15)",
+          secondary: "rgba(124,58,237,0.1)",
+          tertiary: "rgba(76,29,149,0.08)"
         }
       : variant === "subtle"
         ? {
-            primary: "rgba(34,211,238,0.08)",
-            secondary: "rgba(251,191,36,0.05)",
+            primary: "rgba(168,85,247,0.08)",
+            secondary: "rgba(124,58,237,0.05)",
             tertiary: "rgba(255,255,255,0.03)"
           }
         : {
-            primary: "rgba(34,211,238,0.14)",
-            secondary: "rgba(251,191,36,0.08)",
-            tertiary: "rgba(52,211,153,0.06)"
+            primary: "rgba(168,85,247,0.14)",
+            secondary: "rgba(124,58,237,0.08)",
+            tertiary: "rgba(76,29,149,0.06)"
           };
 
   return (
@@ -49,9 +49,7 @@ export function MirrorBackground({ variant = "default" }: { variant?: "default" 
         </>
       ) : null}
 
-      {variant === "arena" ? (
-        <div className="absolute inset-x-[14%] bottom-[18%] h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
-      ) : null}
+      {variant === "arena" ? <div className="absolute inset-x-[14%] bottom-[18%] h-px bg-gradient-to-r from-transparent via-beam/40 to-transparent" /> : null}
 
       <div className="absolute inset-0 subtle-grid opacity-30" />
     </div>
