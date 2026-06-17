@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "npm run dev --workspace apps/web",
     "build": "npm run build --workspace apps/web",
+    "postbuild": "cp -a apps/web/.next ./.next || true",
     "compile": "npm run compile --workspace contracts",
     "test": "npm run test --workspace contracts",
     "deploy": "npm run deploy --workspace contracts",
