@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Manrope, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { OpenLinksInNewTab } from "@/components/shared/OpenLinksInNewTab";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body className="antialiased">
         <div className="noise" aria-hidden="true" />
+        <OpenLinksInNewTab />
         {children}
       </body>
     </html>
