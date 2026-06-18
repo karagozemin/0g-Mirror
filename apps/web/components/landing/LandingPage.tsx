@@ -18,6 +18,9 @@ import { MirrorBackground } from "@/components/fx/MirrorBackground";
 import { LiveTicker } from "@/components/fx/LiveTicker";
 import { HeroReveal, Reveal, StaggerChildren, StaggerItem } from "@/components/fx/Reveal";
 import { Shell } from "@/components/shared/Shell";
+import { ExplorerValue } from "@/components/shared/ExplorerValue";
+import { addressExplorerHref, storageExplorerHref, txExplorerHref } from "@/lib/0g/explorer";
+import { shortHash } from "@/lib/utils/hash";
 
 const MotionLink = motion(Link);
 
@@ -26,6 +29,18 @@ const stats = [
   { value: "0G", label: "Storage + Chain attested", accent: "text-chrome" },
   { value: "Replay", label: "Consistent decision path", accent: "text-chrome" }
 ];
+
+const liveProof = {
+  chainId: "16602",
+  registry: "0x8c5C403994CC7a5A469bBF82904e504060109858",
+  traceId: "1",
+  status: "Verified",
+  decisionHash: "0x7f1775e02212e8764cefc347a09df82aa33ebe05d377e2bb496fb9c2fe1da884",
+  storageUri: "0g://0xe58925c613298780175066ae3e2762e6154b152329a3b3c8b532716196ef4aee",
+  storageTx: "0x109b3457bc7a0b0032b1d81bc773f8664c5dbaaa310adb46d73bdb7360757a03",
+  registerTx: "0x439d5a8bca2bd17b051738d12124b90a0c5cb3ab5c1cc996a76e45137f3b23de",
+  verificationTx: "0x7061af685a1c61e3db2ee976034baad35da506b73464a737dace23027eae2515"
+};
 
 const problem = [
   "No proof of which evidence an agent actually used.",
@@ -137,26 +152,8 @@ export function LandingPage() {
               </HeroReveal>
             </div>
 
-            <HeroReveal delay={0.2} className="hidden lg:block">
-              <motion.div
-                animate={{ y: [0, -14, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="relative"
-              >
-                <div className="absolute -inset-8 rounded-full bg-beam/10 blur-3xl" />
-                <div className="logo-hero relative flex items-center justify-center">
-                  <div className="logo-hero-frame">
-                    <Image
-                      src="/0g-mirror-logo.png"
-                      alt="0G Mirror"
-                      width={420}
-                      height={420}
-                      className="relative h-auto w-[340px]"
-                      priority
-                    />
-                  </div>
-                </div>
-              </motion.div>
+            <HeroReveal delay={0.2}>
+              <LiveProofConsole />
             </HeroReveal>
           </div>
         </div>
@@ -340,6 +337,100 @@ export function LandingPage() {
         </div>
       </section>
     </Shell>
+  );
+}
+
+function LiveProofConsole() {
+  const proofRows = [
+    { label: "Chain ID", value: liveProof.chainId },
+    {
+      label: "Registry",
+      value: shortHash(liveProof.registry, 6),
+      fullValue: liveProof.registry,
+      href: addressExplorerHref(liveProof.registry, Number(liveProof.chainId))
+    },
+    { label: "Trace ID", value: liveProof.traceId },
+    {
+      label: "Decision hash",
+      value: shortHash(liveProof.decisionHash, 8),
+      fullValue: liveProof.decisionHash
+    },
+    {
+      label: "0G Storage URI",
+      value: liveProof.storageUri,
+      fullValue: liveProof.storageUri,
+      href: storageExplorerHref(liveProof.storageUri, Number(liveProof.chainId)),
+      wide: true
+    },
+    {
+      label: "Register tx",
+      value: shortHash(liveProof.registerTx, 8),
+      fullValue: liveProof.registerTx,
+      href: txExplorerHref(liveProof.registerTx, Number(liveProof.chainId))
+    },
+    {
+      label: "Verification tx",
+      value: shortHash(liveProof.verificationTx, 8),
+      fullValue: liveProof.verificationTx,
+      href: txExplorerHref(liveProof.verificationTx, Number(liveProof.chainId))
+    },
+    {
+      label: "Storage tx",
+      value: shortHash(liveProof.storageTx, 8),
+      fullValue: liveProof.storageTx,
+      href: txExplorerHref(liveProof.storageTx, Number(liveProof.chainId))
+    }
+  ];
+
+  return (
+    <motion.div
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      className="relative mx-auto w-full max-w-[520px]"
+    >
+      <div className="absolute -inset-6 rounded-[2rem] bg-beam/10 blur-3xl" />
+      <div className="border-animated relative overflow-hidden rounded-3xl">
+        <div className="glass p-5 sm:p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-mint/25 bg-mint/10 px-3 py-1">
+                <span className="h-2 w-2 rounded-full bg-mint shadow-[0_0_14px_rgba(52,211,153,0.75)]" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-mint">Real 0G Proof</span>
+              </div>
+              <h2 className="mt-4 font-display text-2xl font-black text-white">Live Proof Console</h2>
+              <p className="mt-1 text-sm text-silver/55">Stored on 0G. Verified by replay. Attested on-chain.</p>
+            </div>
+            <Image src="/0g-mirror-logo.png" alt="0G Mirror" width={74} height={74} className="h-16 w-16 opacity-90" priority />
+          </div>
+
+          <div className="mt-5 grid gap-2 sm:grid-cols-2">
+            {proofRows.map((row) => (
+              <div
+                key={row.label}
+                className={`min-w-0 rounded-xl border border-line/60 bg-black/24 p-3 ${row.wide ? "sm:col-span-2" : ""}`}
+              >
+                <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-silver/40">{row.label}</p>
+                <div className="mt-1">
+                  <ExplorerValue
+                    href={row.href}
+                    title={row.fullValue ?? row.value}
+                    copyValue={row.fullValue ?? row.value}
+                    className="w-full justify-between px-2 py-1.5"
+                  >
+                    {row.value}
+                  </ExplorerValue>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-mint/20 bg-mint/8 px-4 py-3">
+            <span className="font-mono text-xs uppercase tracking-[0.16em] text-mint/80">Status</span>
+            <span className="font-display text-lg font-black text-white">{liveProof.status}</span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 

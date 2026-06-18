@@ -43,6 +43,13 @@ export function storageExplorerSearchUrl(query: string, chainId = DEFAULT_CHAIN_
   return `${storageExplorerBaseUrl(chainId)}/search?q=${encodeURIComponent(query)}`;
 }
 
+export function storageExplorerHref(value: string | undefined, chainId = DEFAULT_CHAIN_ID) {
+  if (!value) return undefined;
+  const root = value.startsWith("0g://") ? value.replace("0g://", "") : value;
+  if (!/^0x[a-fA-F0-9]{64}$/.test(root)) return storageExplorerSearchUrl(value, chainId);
+  return storageExplorerSearchUrl(root, chainId);
+}
+
 export function isTxHash(value: string | undefined) {
   return Boolean(value && /^0x[a-fA-F0-9]{64}$/.test(value));
 }

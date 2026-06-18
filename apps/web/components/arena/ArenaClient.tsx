@@ -17,7 +17,7 @@ import { TraceCard } from "@/components/shared/TraceCard";
 import { OperationProgressPanel } from "@/components/shared/OperationProgressPanel";
 import { MirrorBackground } from "@/components/fx/MirrorBackground";
 import { ExplorerValue } from "@/components/shared/ExplorerValue";
-import { txExplorerHref } from "@/lib/0g/explorer";
+import { storageExplorerHref, txExplorerHref } from "@/lib/0g/explorer";
 import { formatWalletError } from "@/lib/wallet/errors";
 import { useWalletPipeline } from "@/lib/wallet/use-wallet-pipeline";
 import {
@@ -31,6 +31,10 @@ import type { OperationProgressState } from "@/components/shared/OperationProgre
 type BusyState = "start" | "verify" | "appeal" | null;
 
 const APPEAL_STEP_TOTAL = 3;
+
+function shortProofValue(value: string | undefined) {
+  return value ? shortHash(value, 8) : "pending";
+}
 
 const agentStyles: Record<AgentId, { gradient: string; border: string; text: string }> = {
   aegis: { gradient: "from-beam/20 to-beam/5", border: "border-beam/40", text: "text-beam" },
@@ -423,6 +427,16 @@ function VerdictCard({ verdict }: { verdict: CourtVerdict }) {
             </div>
           </div>
           <p className="mt-5 text-sm leading-relaxed text-silver/75">{verdict.verdict.summary}</p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {verdict.verdict.reasonCodes.map((code) => (
+              <span
+                key={code}
+                className="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-gold/80"
+              >
+                {code.replaceAll("_", " ")}
+              </span>
+            ))}
+          </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -430,19 +444,27 @@ function VerdictCard({ verdict }: { verdict: CourtVerdict }) {
           <VerdictMetric label="Evidence coverage B" value={`${verdict.verdict.evidenceCoverage.traceB}%`} />
           <VerdictMetric label="Verification A" value={verdict.verdict.verificationStatus.traceA} />
           <VerdictMetric label="Verification B" value={verdict.verdict.verificationStatus.traceB} />
-          <VerdictMetric label="0G Storage URI" value={verdict.storage?.uri ?? "pending"} wide />
+          <VerdictMetric
+            label="0G Storage URI"
+            value={verdict.storage?.uri ?? "pending"}
+            fullValue={verdict.storage?.uri}
+            href={storageExplorerHref(verdict.storage?.uri, verdict.attestation?.chainId)}
+            wide
+          />
           <VerdictMetric
             label="Storage tx"
-            value={shortHash(verdict.storage?.txHash ?? "pending", 8)}
+            value={shortProofValue(verdict.storage?.txHash)}
+            fullValue={verdict.storage?.txHash}
             href={txExplorerHref(verdict.storage?.txHash, verdict.attestation?.chainId)}
           />
           <VerdictMetric label="Attestation ID" value={String(verdict.attestation?.verdictId ?? "pending")} />
           <VerdictMetric
             label="Attestation tx"
-            value={shortHash(verdict.attestation?.txHash ?? "pending", 8)}
+            value={shortProofValue(verdict.attestation?.txHash)}
+            fullValue={verdict.attestation?.txHash}
             href={txExplorerHref(verdict.attestation?.txHash, verdict.attestation?.chainId)}
           />
-          <VerdictMetric label="Verdict root" value={shortHash(verdict.hashes.verdictRoot, 8)} />
+          <VerdictMetric label="Verdict root" value={shortHash(verdict.hashes.verdictRoot, 8)} fullValue={verdict.hashes.verdictRoot} />
         </div>
       </div>
 
@@ -458,11 +480,13 @@ function VerdictCard({ verdict }: { verdict: CourtVerdict }) {
 function VerdictMetric({
   label,
   value,
+  fullValue,
   wide = false,
   href
 }: {
   label: string;
   value: string;
+  fullValue?: string;
   wide?: boolean;
   href?: string;
 }) {
@@ -471,14 +495,16 @@ function VerdictMetric({
       <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-silver/40">{label}</p>
       {href ? (
         <div className="mt-1">
-          <ExplorerValue href={href} title={value} className="w-full justify-between px-2 py-1.5">
+          <ExplorerValue href={href} title={fullValue ?? value} copyValue={fullValue ?? value} className="w-full justify-between px-2 py-1.5">
             {value}
           </ExplorerValue>
         </div>
       ) : (
-        <p className="mt-1 truncate font-mono text-sm font-semibold text-white" title={value}>
-          {value}
-        </p>
+        <div className="mt-1">
+          <ExplorerValue title={fullValue ?? value} copyValue={fullValue ?? value} className="w-full justify-between px-2 py-1.5">
+            {value}
+          </ExplorerValue>
+        </div>
       )}
     </div>
   );

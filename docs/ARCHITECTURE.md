@@ -135,7 +135,7 @@ MirrorRegistry exposes three core calls:
 - `updateVerificationStatus(uint256 traceId, VerificationStatus status)`
 - `registerCourtVerdict(uint256 traceIdA, uint256 traceIdB, string verdictURI, bytes32 verdictRoot, uint256 winningTraceId)`
 
-The chain adapter in earlier versions used a server-side relayer. In the current wallet-native design, on-chain attestations are signed by the connected user wallet in the browser. The app uses the following public environment values in the client:
+In the current wallet-native design, on-chain attestations are signed by the connected user wallet in the browser. The app uses the following public environment values in the client:
 
 - `NEXT_PUBLIC_MIRROR_REGISTRY_ADDRESS`
 - `NEXT_PUBLIC_0G_CHAIN_RPC`
@@ -292,7 +292,7 @@ No local fallback:
 - Public evidence is honest and complete enough for replay.
 - Replay logic is deterministic.
 - Contract and storage endpoints are reachable when credentials exist.
-- Local demo mode is only a fallback.
+- Local browser state can preview the interface, but it is not on-chain proof.
 
 ## 14. Limitations
 
@@ -301,7 +301,7 @@ No local fallback:
 - Access control is minimal.
 - The current MVP is not a full production verifiable-compute platform yet.
 - The current MVP uses deterministic replay verification and is designed to plug into 0G Compute for verifiable execution.
-- Local demo fallback is necessary when credentials are missing.
+- Real proof requires 0G Storage configuration and a connected wallet for chain attestations.
 
 ## 15. Future architecture
 

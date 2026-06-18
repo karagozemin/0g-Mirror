@@ -6,13 +6,17 @@ import type { DecisionTrace } from "@/lib/schemas/decision-trace";
 import { shortHash } from "@/lib/utils/hash";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { ExplorerValue } from "@/components/shared/ExplorerValue";
-import { traceDetailHref, txExplorerHref } from "@/lib/0g/explorer";
+import { storageExplorerHref, traceDetailHref, txExplorerHref } from "@/lib/0g/explorer";
 
 const agentAccent: Record<string, string> = {
   aegis: "border-beam/30 from-beam/8",
   nyx: "border-danger/30 from-danger/8",
   hermes: "border-mint/30 from-mint/8"
 };
+
+function shortProofValue(value: string | undefined) {
+  return value ? shortHash(value, 8) : "pending";
+}
 
 export function TraceCard({ trace, compact = false }: { trace: DecisionTrace; compact?: boolean }) {
   const agentKey = trace.agent.name.toLowerCase();
@@ -54,23 +58,39 @@ export function TraceCard({ trace, compact = false }: { trace: DecisionTrace; co
             icon={<Fingerprint className="h-3.5 w-3.5" />}
             label="Decision hash"
             value={shortHash(trace.hashes.decisionHash, 8)}
+            fullValue={trace.hashes.decisionHash}
             href={traceDetailHref(trace.traceId)}
             external={false}
           />
-          <InfoLine icon={<Database className="h-3.5 w-3.5" />} label="0G Storage URI" value={trace.storage?.uri ?? "pending"} />
+          <InfoLine
+            icon={<Database className="h-3.5 w-3.5" />}
+            label="0G Storage URI"
+            value={trace.storage?.uri ?? "pending"}
+            fullValue={trace.storage?.uri}
+            href={storageExplorerHref(trace.storage?.uri, chainId)}
+          />
           <InfoLine
             icon={<Network className="h-3.5 w-3.5" />}
             label="Register tx"
-            value={shortHash(trace.attestation?.txHash ?? "pending", 8)}
+            value={shortProofValue(trace.attestation?.txHash)}
+            fullValue={trace.attestation?.txHash}
             href={txExplorerHref(trace.attestation?.txHash, chainId)}
           />
           <InfoLine
             icon={<ShieldAlert className="h-3.5 w-3.5" />}
             label="Storage tx"
-            value={shortHash(trace.storage?.txHash ?? "pending", 8)}
+            value={shortProofValue(trace.storage?.txHash)}
+            fullValue={trace.storage?.txHash}
             href={txExplorerHref(trace.storage?.txHash, chainId)}
           />
-          <InfoLine icon={<Network className="h-3.5 w-3.5" />} label="On-chain trace ID" value={String(trace.attestation?.traceId ?? "pending")} />
+          <InfoLine
+            icon={<Network className="h-3.5 w-3.5" />}
+            label="On-chain trace ID"
+            value={String(trace.attestation?.traceId ?? "pending")}
+            fullValue={trace.attestation?.traceId ? String(trace.attestation.traceId) : undefined}
+            href={trace.attestation?.traceId ? traceDetailHref(trace.traceId) : undefined}
+            external={false}
+          />
           <InfoLine icon={<ShieldAlert className="h-3.5 w-3.5" />} label="Replay result" value={trace.verification.replayResult ?? "not replayed"} />
         </div>
 
@@ -114,12 +134,14 @@ function InfoLine({
   icon,
   label,
   value,
+  fullValue,
   href,
   external = true
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
+  fullValue?: string;
   href?: string;
   external?: boolean;
 }) {
@@ -131,14 +153,16 @@ function InfoLine({
       </div>
       {href ? (
         <div className="mt-1">
-          <ExplorerValue href={href} title={value} className="w-full justify-between px-2 py-1.5" external={external}>
+          <ExplorerValue href={href} title={fullValue ?? value} copyValue={fullValue ?? value} className="w-full justify-between px-2 py-1.5" external={external}>
             {value}
           </ExplorerValue>
         </div>
       ) : (
-        <p className="mt-0.5 truncate font-mono text-xs text-silver/85" title={value}>
-          {value}
-        </p>
+        <div className="mt-1">
+          <ExplorerValue title={fullValue ?? value} copyValue={fullValue ?? value} className="w-full justify-between px-2 py-1.5">
+            {value}
+          </ExplorerValue>
+        </div>
       )}
     </div>
   );

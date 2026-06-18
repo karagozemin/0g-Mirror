@@ -1,9 +1,9 @@
-// Server-side relayer for 0G Chain writes has been removed.
-// Chain attestation must be performed by the connected user wallet in the browser.
+// Server-side 0G Chain writes are disabled for the public app.
+// Chain attestations must be performed by the connected user wallet in the browser.
 // This file is intentionally minimal to avoid providing server-side signing endpoints.
 
 export class MissingChainConfigError extends Error {
-  constructor(message = "Server-side chain relayer is disabled. Use wallet-native attestation.") {
+  constructor(message = "Server-side chain writes are disabled. Use wallet-native attestation.") {
     super(message);
     this.name = "MissingChainConfigError";
   }

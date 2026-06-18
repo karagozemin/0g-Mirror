@@ -18,9 +18,13 @@ import { updateTraceStatus } from "@/components/shared/client-actions";
 import { formatWalletError } from "@/lib/wallet/errors";
 import { useWalletPipeline } from "@/lib/wallet/use-wallet-pipeline";
 import { ExplorerValue } from "@/components/shared/ExplorerValue";
-import { txExplorerHref } from "@/lib/0g/explorer";
+import { storageExplorerHref, traceDetailHref, txExplorerHref } from "@/lib/0g/explorer";
 
 const MotionLink = motion(Link);
+
+function shortProofValue(value: string | undefined) {
+  return value ? shortHash(value, 8) : "pending";
+}
 
 export function VerifyClient({ traceId }: { traceId: string }) {
   const [trace, setTrace] = useState<DecisionTrace | null>(null);
@@ -125,18 +129,25 @@ export function VerifyClient({ traceId }: { traceId: string }) {
           >
             <div className="glass rounded-2xl p-5">
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                <Meta label="Trace ID" value={trace.traceId} />
-                <Meta label="Decision hash" value={shortHash(trace.hashes.decisionHash, 8)} />
-                <Meta label="Storage URI" value={trace.storage?.uri ?? "pending"} />
+                <Meta label="Trace ID" value={trace.traceId} href={traceDetailHref(trace.traceId)} external={false} />
+                <Meta label="Decision hash" value={shortHash(trace.hashes.decisionHash, 8)} fullValue={trace.hashes.decisionHash} />
+                <Meta
+                  label="Storage URI"
+                  value={trace.storage?.uri ?? "pending"}
+                  fullValue={trace.storage?.uri}
+                  href={storageExplorerHref(trace.storage?.uri, trace.attestation?.chainId)}
+                />
                 <Meta
                   label="Storage tx"
-                  value={shortHash(trace.storage?.txHash ?? "pending", 8)}
+                  value={shortProofValue(trace.storage?.txHash)}
+                  fullValue={trace.storage?.txHash}
                   href={txExplorerHref(trace.storage?.txHash, trace.attestation?.chainId)}
                 />
-                <Meta label="Attestation" value={String(trace.attestation?.traceId ?? "pending")} />
+                <Meta label="Attestation" value={String(trace.attestation?.traceId ?? "pending")} fullValue={trace.attestation?.traceId ? String(trace.attestation.traceId) : undefined} />
                 <Meta
                   label="Register tx"
-                  value={shortHash(trace.attestation?.txHash ?? "pending", 8)}
+                  value={shortProofValue(trace.attestation?.txHash)}
+                  fullValue={trace.attestation?.txHash}
                   href={txExplorerHref(trace.attestation?.txHash, trace.attestation?.chainId)}
                 />
               </div>
@@ -154,20 +165,34 @@ export function VerifyClient({ traceId }: { traceId: string }) {
   );
 }
 
-function Meta({ label, value, href }: { label: string; value: string; href?: string }) {
+function Meta({
+  label,
+  value,
+  fullValue,
+  href,
+  external = true
+}: {
+  label: string;
+  value: string;
+  fullValue?: string;
+  href?: string;
+  external?: boolean;
+}) {
   return (
     <div className="min-w-0 rounded-xl border border-line/60 bg-black/20 p-3">
       <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-silver/40">{label}</p>
       {href ? (
         <div className="mt-1">
-          <ExplorerValue href={href} title={value} className="w-full justify-between px-2 py-1.5">
+          <ExplorerValue href={href} title={fullValue ?? value} copyValue={fullValue ?? value} className="w-full justify-between px-2 py-1.5" external={external}>
             {value}
           </ExplorerValue>
         </div>
       ) : (
-        <p className="mt-1 truncate font-mono text-sm font-semibold text-white" title={value}>
-          {value}
-        </p>
+        <div className="mt-1">
+          <ExplorerValue title={fullValue ?? value} copyValue={fullValue ?? value} className="w-full justify-between px-2 py-1.5">
+            {value}
+          </ExplorerValue>
+        </div>
       )}
     </div>
   );

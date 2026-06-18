@@ -1,7 +1,7 @@
 # 0G Mirror
 
 <p align="center">
-    <img src="/0g-mirror.png" alt="0G Mirror logo" width="200" />
+    <img src="./apps/web/public/0g-mirror-logo.png" alt="0G Mirror logo" width="200" />
 </p>
 
 Verifiable Decision Trails for AI Agents
@@ -17,14 +17,14 @@ What 0G Mirror does in one line: capture agent decisions as auditable, content-a
 | Item | Value |
 | --- | --- |
 | **Chain ID** | 16602 |
-| **MirrorRegistry** | 0x8c5C403994CC7a5A469bBF82904e504060109858 |
+| **MirrorRegistry** | [0x8c5C403994CC7a5A469bBF82904e504060109858](https://chainscan-galileo.0g.ai/address/0x8c5C403994CC7a5A469bBF82904e504060109858) |
 | **Trace ID** | 1 |
 | **Verification Status** | Verified |
 | **Decision Hash** | 0x7f1775e02212e8764cefc347a09df82aa33ebe05d377e2bb496fb9c2fe1da884 |
-| **0G Storage URI** | 0g://0xe58925c613298780175066ae3e2762e6154b152329a3b3c8b532716196ef4aee |
-| **0G Storage Tx** | 0x109b3457bc7a0b0032b1d81bc773f8664c5dbaaa310adb46d73bdb7360757a03 |
-| **Register Trace Tx** | 0x439d5a8bca2bd17b051738d12124b90a0c5cb3ab5c1cc996a76e45137f3b23de |
-| **Verification Status Tx** | 0x7061af685a1c61e3db2ee976034baad35da506b73464a737dace23027eae2515 |
+| **0G Storage URI** | [0g://0xe58925c613298780175066ae3e2762e6154b152329a3b3c8b532716196ef4aee](https://storagescan-galileo.0g.ai/search?q=0xe58925c613298780175066ae3e2762e6154b152329a3b3c8b532716196ef4aee) |
+| **0G Storage Tx** | [0x109b3457bc7a0b0032b1d81bc773f8664c5dbaaa310adb46d73bdb7360757a03](https://chainscan-galileo.0g.ai/tx/0x109b3457bc7a0b0032b1d81bc773f8664c5dbaaa310adb46d73bdb7360757a03) |
+| **Register Trace Tx** | [0x439d5a8bca2bd17b051738d12124b90a0c5cb3ab5c1cc996a76e45137f3b23de](https://chainscan-galileo.0g.ai/tx/0x439d5a8bca2bd17b051738d12124b90a0c5cb3ab5c1cc996a76e45137f3b23de) |
+| **Verification Status Tx** | [0x7061af685a1c61e3db2ee976034baad35da506b73464a737dace23027eae2515](https://chainscan-galileo.0g.ai/tx/0x7061af685a1c61e3db2ee976034baad35da506b73464a737dace23027eae2515) |
 
 Short explanation: this shows a Decision Trace was uploaded to 0G Storage (storage tx), the trace root/hash were registered on 0G Chain (register tx), and the verifier attested a `Verified` status on-chain (verification tx). See [docs/PROOF.md](./docs/PROOF.md) for the full artifact and reproducibility steps.
 
@@ -39,6 +39,8 @@ The current MVP uses deterministic replay verification and is designed to plug i
 ## Why it matters
 
 Protocols and users need verifiable records of consequential agent actions — not hidden reasoning. 0G Mirror provides a minimal, auditable evidence trail so third parties can reproduce and assess decisions without accessing private chain-of-thought.
+
+0G Mirror does not claim to expose private model chain-of-thought. It records a verifiable Decision Trace: inputs, evidence, model config, tool usage, public rationale, output, hashes, replay status, and on-chain attestation.
 
 ## How it works (4 steps)
 
@@ -106,7 +108,7 @@ Recommended variables (examples):
 
 No server-side private key is used for 0G Chain transactions. Chain writes are signed by the connected user wallet in the browser.
 
-Note: The application no longer creates a local demo fallback for missing credentials. Storage uploads and on-chain attestations require configured storage endpoints and a connected wallet to sign transactions. If credentials or wallet access are missing, the UI will surface an error and require the user to provide the necessary configuration or connect a wallet.
+Note: The deployed UI can be previewed without sending transactions, but previewed local browser state is not on-chain proof. Real 0G proof requires configured 0G Storage endpoints and a connected wallet to sign 0G Chain transactions. If credentials or wallet access are missing, the UI surfaces an error and asks the user to provide the required configuration or connect a wallet.
 
 ## Smart contract
 
@@ -129,6 +131,5 @@ See the 90-second judge script: [docs/DEMO_FLOW.md](./docs/DEMO_FLOW.md)
 - Browser wallet flow (MetaMask/Rabby)
 - Public Trace Explorer
 - Multi-agent decision graphs and verifier roles
-
 
 
