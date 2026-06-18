@@ -10,6 +10,8 @@ import {
   verifyTraceWithWallet
 } from "@/lib/wallet/pipeline";
 
+export { storeVerdictWithWallet, registerVerdictWithWallet };
+
 export async function ensureStoredTrace(trace: DecisionTrace) {
   if (trace.storage?.uri) return { trace, notice: null as string | null };
   try {

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Crown, Database, Gavel, Loader2, Scale, ShieldCheck, Swords, Trophy, Zap } from "lucide-react";
 import { agents, runAgentDecision, type AgentId } from "@/lib/ai/agent";
-import { applyVerification } from "@/lib/ai/verifier";
 import { runOlympusJudge } from "@/lib/ai/judge";
 import type { DecisionTrace } from "@/lib/schemas/decision-trace";
 import type { CourtVerdict } from "@/lib/schemas/court-verdict";
@@ -22,23 +21,16 @@ import { txExplorerHref } from "@/lib/0g/explorer";
 import { formatWalletError } from "@/lib/wallet/errors";
 import { useWalletPipeline } from "@/lib/wallet/use-wallet-pipeline";
 import {
-  ensureRegisteredTrace,
-  ensureStoredTrace,
-  storeAndAttestVerdict,
-  updateTraceStatus
+  storeVerdictWithWallet,
+  registerVerdictWithWallet
 } from "@/components/shared/client-actions";
+import { isTraceAppealReady } from "@/lib/utils/trace-ready";
+import { verifyBothTracesWithWallet, planVerifyBothSteps, type ArenaProgressUpdate } from "@/lib/wallet/arena-pipeline";
+import type { OperationProgressState } from "@/components/shared/OperationProgressPanel";
 
 type BusyState = "start" | "verify" | "appeal" | null;
-type AppealPhase = "storage" | "chain" | "judge" | "complete";
-type AppealProgress = {
-  phase: AppealPhase;
-  label: string;
-  detail: string;
-  step: number;
-  percent: number;
-};
 
-const APPEAL_STEP_TOTAL = 8;
+const APPEAL_STEP_TOTAL = 3;
 
 const agentStyles: Record<AgentId, { gradient: string; border: string; text: string }> = {
   aegis: { gradient: "from-beam/20 to-beam/5", border: "border-beam/40", text: "text-beam" },
@@ -56,21 +48,35 @@ export function ArenaClient() {
   const [notice, setNotice] = useState<string | null>(null);
   const [noticeVariant, setNoticeVariant] = useState<"warn" | "success" | "info">("success");
   const [battling, setBattling] = useState(false);
-  const [appealProgress, setAppealProgress] = useState<AppealProgress | null>(null);
+  const [operationProgress, setOperationProgress] = useState<OperationProgressState | null>(null);
+  const [operationTotalSteps, setOperationTotalSteps] = useState(0);
+  const [operationAccent, setOperationAccent] = useState<"gold" | "beam">("gold");
   const { ensureConnected } = useWalletPipeline();
   const hasBothTraces = Boolean(traceA && traceB);
-  const hasVerifiedBoth = Boolean(
-    traceA?.verification.status === "Verified" && traceB?.verification.status === "Verified"
-  );
+  const canAppeal = isTraceAppealReady(traceA) && isTraceAppealReady(traceB);
+  const verifyWalletTxCount =
+    traceA && traceB ? planVerifyBothSteps(traceA, traceB).walletTxCount : null;
 
-  function setAppealStep(step: number, phase: AppealPhase, label: string, detail: string) {
-    setAppealProgress({
+  function setArenaProgress(update: ArenaProgressUpdate) {
+    setOperationProgress({
+      phase: update.phase,
+      label: update.label,
+      detail: update.detail,
+      step: update.step,
+      percent: update.percent
+    });
+    setOperationTotalSteps(update.totalSteps);
+  }
+
+  function setAppealStep(step: number, label: string, detail: string, phase = "chain") {
+    setOperationProgress({
       phase,
       label,
       detail,
       step,
-      percent: Math.min(92, Math.round((step / APPEAL_STEP_TOTAL) * 92))
+      percent: step >= APPEAL_STEP_TOTAL ? 100 : Math.min(92, Math.round((step / APPEAL_STEP_TOTAL) * 92))
     });
+    setOperationTotalSteps(APPEAL_STEP_TOTAL);
   }
 
   function startBattle() {
@@ -79,7 +85,7 @@ export function ArenaClient() {
     setNotice(null);
     setBattling(true);
     setVerdict(null);
-    setAppealProgress(null);
+    setOperationProgress(null);
 
     setTimeout(() => {
       const nextA = runAgentDecision(agentA, "defi-vault");
@@ -108,45 +114,19 @@ export function ArenaClient() {
     }
 
     setBusy("verify");
-    setAppealProgress(null);
+    setOperationAccent("beam");
+    setOperationProgress(null);
     try {
-      const storedA = await ensureStoredTrace(traceA);
-      if (storedA.notice) {
-        showNotice(storedA.notice, "warn");
-        return;
-      }
-      const registeredA = await ensureRegisteredTrace(storedA.trace);
-      if (registeredA.notice) {
-        showNotice(registeredA.notice, "warn");
-        return;
-      }
-
-      const storedB = await ensureStoredTrace(traceB);
-      if (storedB.notice) {
-        showNotice(storedB.notice, "warn");
-        return;
-      }
-      const registeredB = await ensureRegisteredTrace(storedB.trace);
-      if (registeredB.notice) {
-        showNotice(registeredB.notice, "warn");
-        return;
-      }
-
-      const verifiedA = applyVerification(registeredA.trace);
-      const verifiedB = applyVerification(registeredB.trace);
-      const updatedA = await updateTraceStatus(verifiedA);
-      const updatedB = await updateTraceStatus(verifiedB);
-
-      if (updatedA.notice || updatedB.notice) {
-        showNotice(updatedA.notice ?? updatedB.notice ?? "Verification failed.", "warn");
-        return;
-      }
-
-      setTraceA(updatedA.trace);
-      setTraceB(updatedB.trace);
-      showNotice("Both traces verified on-chain. Appeal to Olympus unlocked.", "success");
+      const result = await verifyBothTracesWithWallet(traceA, traceB, setArenaProgress);
+      setTraceA(result.traceA);
+      setTraceB(result.traceB);
+      showNotice(
+        `Both traces attested on-chain (A: ${result.traceA.verification.status}, B: ${result.traceB.verification.status}). Appeal to Olympus unlocked.`,
+        "success"
+      );
     } catch (error) {
       showNotice(formatWalletError(error), "warn");
+      setOperationProgress(null);
     } finally {
       setBusy(null);
     }
@@ -154,7 +134,7 @@ export function ArenaClient() {
 
   async function appeal() {
     if (!traceA || !traceB) return;
-    if (!hasVerifiedBoth) {
+    if (!canAppeal) {
       showNotice("Verify Both Traces first, then Appeal to Olympus.", "warn");
       return;
     }
@@ -166,31 +146,33 @@ export function ArenaClient() {
     }
 
     setBusy("appeal");
+    setOperationAccent("gold");
     setNotice(null);
-    setAppealStep(1, "judge", "Olympus Judge", "Comparing evidence coverage and replay status.");
+    setOperationTotalSteps(APPEAL_STEP_TOTAL);
+    setAppealStep(1, "Olympus Judge", "Comparing evidence coverage and replay status.", "judge");
 
     try {
       const claim = "Trace B ignored critical risk evidence.";
       const nextVerdict = runOlympusJudge(traceA, traceB, claim);
 
-      setAppealStep(2, "storage", "0G Storage: court verdict", "Confirm the verdict upload in your wallet.");
-      const attested = await storeAndAttestVerdict(nextVerdict, traceA, traceB);
-      if (attested.notice) {
-        showNotice(attested.notice, "warn");
-        return;
-      }
+      setAppealStep(2, "0G Storage", "Confirm the court verdict upload in your wallet.", "storage");
+      const storedVerdict = await storeVerdictWithWallet(nextVerdict);
 
-      setVerdict(attested.verdict);
-      setAppealProgress({
+      setAppealStep(3, "On-chain verdict", "Confirm court verdict registration in your wallet.", "chain");
+      const attested = await registerVerdictWithWallet(storedVerdict, traceA, traceB);
+
+      setVerdict(attested);
+      setOperationProgress({
         phase: "complete",
         label: "Olympus verdict attested",
         detail: "0G Storage URI and chain attestation are recorded on-chain.",
         step: APPEAL_STEP_TOTAL,
         percent: 100
       });
-      showNotice(`Olympus verdict registered on-chain. Verdict ID: ${attested.verdict.attestation?.verdictId}.`, "success");
+      showNotice(`Olympus verdict registered on-chain. Verdict ID: ${attested.attestation?.verdictId}.`, "success");
     } catch (error) {
       showNotice(formatWalletError(error), "warn");
+      setOperationProgress(null);
     } finally {
       setBusy(null);
     }
@@ -313,18 +295,28 @@ export function ArenaClient() {
             <Button
               onClick={appeal}
               loading={busy === "appeal"}
-              disabled={!hasBothTraces || !hasVerifiedBoth || busy !== null}
+              disabled={!hasBothTraces || !canAppeal || busy !== null}
               variant="gold"
-              title={!hasVerifiedBoth ? "Verify Both Traces first" : undefined}
+              title={!canAppeal ? "Verify Both Traces first" : undefined}
             >
               <Gavel className="h-4 w-4" />
               Appeal to Olympus
             </Button>
           </div>
           <p className="mt-3 text-sm text-silver/45">
-            Step order: verify both traces first, then open the appeal.
+            {verifyWalletTxCount
+              ? `Verify both traces (${verifyWalletTxCount} wallet confirmation${verifyWalletTxCount === 1 ? "" : "s"}), then appeal to Olympus (2 wallet confirmations).`
+              : "Verify both traces first, then appeal to Olympus."}
           </p>
-          <AnimatePresence>{appealProgress ? <OperationProgressPanel progress={appealProgress} totalSteps={APPEAL_STEP_TOTAL} /> : null}</AnimatePresence>
+          <AnimatePresence>
+            {operationProgress ? (
+              <OperationProgressPanel
+                progress={operationProgress}
+                totalSteps={operationTotalSteps}
+                accent={operationAccent}
+              />
+            ) : null}
+          </AnimatePresence>
         </div>
 
         {/* Verdict */}

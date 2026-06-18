@@ -24,9 +24,11 @@ import { TraceCard } from "@/components/shared/TraceCard";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { OperationProgressPanel, type OperationProgressState } from "@/components/shared/OperationProgressPanel";
 import { MirrorBackground } from "@/components/fx/MirrorBackground";
+import { ConfettiBurst } from "@/components/fx/ConfettiBurst";
 import { ensureStoredTrace, ensureRegisteredTrace, updateTraceStatus } from "@/components/shared/client-actions";
 import { formatWalletError } from "@/lib/wallet/errors";
 import { useWalletPipeline } from "@/lib/wallet/use-wallet-pipeline";
+import { celebrateSuccess } from "@/lib/utils/celebrate";
 
 type BusyState = "run" | "store" | "register" | "verify" | null;
 const RUN_DECISION_DELAY_MS = 2400;
@@ -56,6 +58,7 @@ export function MirrorClient() {
   const [notice, setNotice] = useState<string | null>(null);
   const [noticeVariant, setNoticeVariant] = useState<"warn" | "success" | "info">("success");
   const [operationProgress, setOperationProgress] = useState<OperationProgressState | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
   const { ensureConnected, wrongNetwork } = useWalletPipeline();
 
   const selectedAgent = agents[agentId];
@@ -229,6 +232,8 @@ export function MirrorClient() {
         `Verification status: ${result.trace.verification.status}.`
       );
       showNotice(`Verified on-chain: ${result.trace.verification.status}.`, "success");
+      setShowConfetti(true);
+      celebrateSuccess();
     } catch (error) {
       showNotice(formatWalletError(error), "warn");
       setOperationProgress(null);
@@ -239,6 +244,7 @@ export function MirrorClient() {
 
   return (
     <Shell>
+      <ConfettiBurst active={showConfetti} onDone={() => setShowConfetti(false)} />
       {/* Header */}
       <section className="relative overflow-hidden border-b border-line">
         <MirrorBackground variant="subtle" />
