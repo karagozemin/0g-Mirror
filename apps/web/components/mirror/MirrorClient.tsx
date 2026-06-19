@@ -457,8 +457,7 @@ export function MirrorClient() {
                       <Link
                         href={`/verify/${trace.traceId}`}
                         target="_blank"
-                        rel="noreferrer"
-                        data-new-tab="true"
+                        rel="noopener noreferrer"
                         className="font-semibold text-beam transition hover:text-beam/75"
                       >
                         Open verifier →

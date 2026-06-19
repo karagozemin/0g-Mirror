@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Manrope, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { OpenLinksInNewTab } from "@/components/shared/OpenLinksInNewTab";
 import WalletProvider from "@/components/wallet/WalletProvider";
 
 const display = Space_Grotesk({
@@ -40,7 +39,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body className="antialiased">
         <div className="noise" aria-hidden="true" />
-        <OpenLinksInNewTab />
         <WalletProvider>{children}</WalletProvider>
       </body>
     </html>
