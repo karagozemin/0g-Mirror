@@ -1,7 +1,7 @@
 "use client";
 
 import { writeContract, waitForTransactionReceipt } from "@wagmi/core";
-import { parseEventLogs } from "viem";
+import { parseEventLogs, type Hash, type TransactionReceipt } from "viem";
 import { wagmiConfig } from "@/lib/wallet/wagmi";
 import galileoChain from "@/lib/wallet/chains";
 import { MIRROR_REGISTRY_ABI, verificationStatusToEnum } from "@/lib/contracts/MirrorRegistry";
@@ -10,6 +10,43 @@ import { ensureGalileoChain, getRegistryAddress } from "@/lib/wallet/require";
 import { MULTICALL3_ABI, MULTICALL3_ADDRESS, encodeRegistryCall } from "@/lib/wallet/multicall";
 
 type RegistryTxResult = { traceId: number; txHash: string };
+const RECEIPT_TIMEOUT_MS = 180_000;
+const RECEIPT_ATTEMPT_TIMEOUT_MS = 30_000;
+const RECEIPT_POLLING_INTERVAL_MS = 2_000;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function waitFor0GReceipt(hash: Hash): Promise<TransactionReceipt> {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < RECEIPT_TIMEOUT_MS) {
+    try {
+      const receipt = await waitForTransactionReceipt(wagmiConfig, {
+        hash,
+        chainId: galileoChain.id,
+        timeout: RECEIPT_ATTEMPT_TIMEOUT_MS,
+        pollingInterval: RECEIPT_POLLING_INTERVAL_MS
+      });
+
+      if (receipt.status === "reverted") {
+        throw new Error(`Transaction ${hash} reverted on-chain.`);
+      }
+
+      return receipt;
+    } catch (error) {
+      if (error instanceof Error && error.message.toLowerCase().includes("reverted")) {
+        throw error;
+      }
+      await sleep(RECEIPT_POLLING_INTERVAL_MS);
+    }
+  }
+
+  throw new Error(
+    `Transaction ${hash} was submitted, but 0G RPC did not return a receipt yet. Check the transaction in the explorer and refresh the app after it is indexed.`
+  );
+}
 
 async function registerSingleTraceOnWallet(entry: {
   decisionHash: string;
@@ -24,7 +61,7 @@ async function registerSingleTraceOnWallet(entry: {
     args: [entry.decisionHash as `0x${string}`, entry.traceURI, entry.traceRoot as `0x${string}`],
     chainId: galileoChain.id
   });
-  const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
+  const receipt = await waitFor0GReceipt(hash);
   const events = parseEventLogs({
     abi: MIRROR_REGISTRY_ABI,
     logs: receipt.logs,
@@ -48,7 +85,7 @@ async function updateSingleVerificationStatusOnWallet(entry: {
     args: [BigInt(entry.traceId), verificationStatusToEnum[entry.status]],
     chainId: galileoChain.id
   });
-  await waitForTransactionReceipt(wagmiConfig, { hash });
+  await waitFor0GReceipt(hash);
 }
 
 export async function registerDecisionTraceOnWallet(params: {
@@ -75,8 +112,9 @@ export async function batchRegisterDecisionTracesOnWallet(
     return [await registerSingleTraceOnWallet(entries[0]!)];
   }
 
+  let batchHash: Hash;
   try {
-    const hash = await writeContract(wagmiConfig, {
+    batchHash = await writeContract(wagmiConfig, {
       address: MULTICALL3_ADDRESS,
       abi: MULTICALL3_ABI,
       functionName: "aggregate3",
@@ -92,19 +130,6 @@ export async function batchRegisterDecisionTracesOnWallet(
       ],
       chainId: galileoChain.id
     });
-    const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
-    const events = parseEventLogs({
-      abi: MIRROR_REGISTRY_ABI,
-      logs: receipt.logs,
-      eventName: "DecisionTraceRegistered"
-    });
-    if (events.length !== entries.length) {
-      throw new Error("Batch registration did not emit the expected trace events.");
-    }
-    return events.map((event) => ({
-      traceId: Number(event.args.traceId),
-      txHash: receipt.transactionHash
-    }));
   } catch {
     const results: RegistryTxResult[] = [];
     for (const entry of entries) {
@@ -112,6 +137,20 @@ export async function batchRegisterDecisionTracesOnWallet(
     }
     return results;
   }
+
+  const receipt = await waitFor0GReceipt(batchHash);
+  const events = parseEventLogs({
+    abi: MIRROR_REGISTRY_ABI,
+    logs: receipt.logs,
+    eventName: "DecisionTraceRegistered"
+  });
+  if (events.length !== entries.length) {
+    throw new Error("Batch registration did not emit the expected trace events.");
+  }
+  return events.map((event) => ({
+    traceId: Number(event.args.traceId),
+    txHash: receipt.transactionHash
+  }));
 }
 
 export async function updateVerificationStatusOnWallet(params: { traceId: number; status: VerificationStatus }) {
@@ -131,8 +170,9 @@ export async function batchUpdateVerificationStatusOnWallet(
     return;
   }
 
+  let batchHash: Hash;
   try {
-    const hash = await writeContract(wagmiConfig, {
+    batchHash = await writeContract(wagmiConfig, {
       address: MULTICALL3_ADDRESS,
       abi: MULTICALL3_ABI,
       functionName: "aggregate3",
@@ -148,12 +188,14 @@ export async function batchUpdateVerificationStatusOnWallet(
       ],
       chainId: galileoChain.id
     });
-    await waitForTransactionReceipt(wagmiConfig, { hash });
   } catch {
     for (const entry of entries) {
       await updateSingleVerificationStatusOnWallet(entry);
     }
+    return;
   }
+
+  await waitFor0GReceipt(batchHash);
 }
 
 export async function registerCourtVerdictOnWallet(params: {
@@ -180,7 +222,7 @@ export async function registerCourtVerdictOnWallet(params: {
     chainId: galileoChain.id
   });
 
-  const receipt = await waitForTransactionReceipt(wagmiConfig, { hash });
+  const receipt = await waitFor0GReceipt(hash);
   const events = parseEventLogs({
     abi: MIRROR_REGISTRY_ABI,
     logs: receipt.logs,
