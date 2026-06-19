@@ -10,6 +10,11 @@ const storageExplorerBaseByChainId: Record<number, string> = {
   16661: "https://storagescan.0g.ai"
 };
 
+const storageIndexerBaseByChainId: Record<number, string> = {
+  16602: "https://indexer-storage-testnet-turbo.0g.ai",
+  16661: "https://indexer-storage.0g.ai"
+};
+
 function normalizeBaseUrl(baseUrl: string) {
   return baseUrl.replace(/\/$/, "");
 }
@@ -27,6 +32,14 @@ function storageExplorerBaseUrl(chainId = DEFAULT_CHAIN_ID) {
   return normalizeBaseUrl(storageExplorerBaseByChainId[chainId] ?? storageExplorerBaseByChainId[16602]);
 }
 
+function storageIndexerBaseUrl(chainId = DEFAULT_CHAIN_ID) {
+  return normalizeBaseUrl(
+    process.env.NEXT_PUBLIC_0G_STORAGE_INDEXER ??
+      storageIndexerBaseByChainId[chainId] ??
+      storageIndexerBaseByChainId[16602]
+  );
+}
+
 export function chainExplorerTxUrl(txHash: string, chainId = DEFAULT_CHAIN_ID) {
   return `${explorerBaseUrl(chainId)}/tx/${txHash}`;
 }
@@ -39,15 +52,22 @@ export function chainExplorerSearchUrl(query: string, chainId = DEFAULT_CHAIN_ID
   return `${explorerBaseUrl(chainId)}/search?q=${encodeURIComponent(query)}`;
 }
 
+export function storageIndexerFileUrl(root: string, chainId = DEFAULT_CHAIN_ID) {
+  return `${storageIndexerBaseUrl(chainId)}/file?root=${encodeURIComponent(root)}`;
+}
+
 export function storageExplorerSearchUrl(query: string, chainId = DEFAULT_CHAIN_ID) {
-  return `${storageExplorerBaseUrl(chainId)}/search?q=${encodeURIComponent(query)}`;
+  if (/^0x[a-fA-F0-9]{64}$/.test(query)) {
+    return storageIndexerFileUrl(query, chainId);
+  }
+  return `${storageExplorerBaseUrl(chainId)}/files?q=${encodeURIComponent(query)}`;
 }
 
 export function storageExplorerHref(value: string | undefined, chainId = DEFAULT_CHAIN_ID) {
   if (!value) return undefined;
   const root = value.startsWith("0g://") ? value.replace("0g://", "") : value;
-  if (!/^0x[a-fA-F0-9]{64}$/.test(root)) return storageExplorerSearchUrl(value, chainId);
-  return storageExplorerSearchUrl(root, chainId);
+  if (/^0x[a-fA-F0-9]{64}$/.test(root)) return storageIndexerFileUrl(root, chainId);
+  return storageExplorerSearchUrl(value, chainId);
 }
 
 export function isTxHash(value: string | undefined) {

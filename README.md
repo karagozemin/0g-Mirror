@@ -51,7 +51,7 @@ Real end-to-end proof on **0G Galileo** — not a mock:
 | MirrorRegistry | [`0x8c5C403994CC7a5A469bBF82904e504060109858`](https://chainscan-galileo.0g.ai/address/0x8c5C403994CC7a5A469bBF82904e504060109858) |
 | Trace ID / Status | `1` / `Verified` |
 | Decision Hash | `0x7f1775e02212e8764cefc347a09df82aa33ebe05d377e2bb496fb9c2fe1da884` |
-| 0G Storage URI | [`0g://0xe58925c6…ef4aee`](https://storagescan-galileo.0g.ai/search?q=0xe58925c613298780175066ae3e2762e6154b152329a3b3c8b532716196ef4aee) |
+| 0G Storage URI | [`0g://0xe58925c6…ef4aee`](https://indexer-storage-testnet-turbo.0g.ai/file?root=0xe58925c613298780175066ae3e2762e6154b152329a3b3c8b532716196ef4aee) |
 | Storage Tx | [`0x109b3457…0757a03`](https://chainscan-galileo.0g.ai/tx/0x109b3457bc7a0b0032b1d81bc773f8664c5dbaaa310adb46d73bdb7360757a03) |
 | Register Tx | [`0x439d5a8b…3b23de`](https://chainscan-galileo.0g.ai/tx/0x439d5a8bca2bd17b051738d12124b90a0c5cb3ab5c1cc996a76e45137f3b23de) |
 | Verify Tx | [`0x7061af68…ae2515`](https://chainscan-galileo.0g.ai/tx/0x7061af685a1c61e3db2ee976034baad35da506b73464a737dace23027eae2515) |
@@ -84,7 +84,7 @@ The storage operator cannot mutate the artifact without breaking the signed hash
 
 ## 5. Full Architecture
 
-**[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — trust model, 5 Mermaid diagrams, schemas, storage operator role, MirrorRegistry, replay verification, MVP vs future work.
+**[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — 13 Mermaid diagrams: system overview, proof flow, artifact schema, storage upload, chain attestation, trust boundaries, replay, Olympus Arena, 0G data split.
 
 ---
 
