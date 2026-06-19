@@ -6,7 +6,7 @@
 
 ## Short description
 
-0G Mirror is a verifiable decision layer for AI agents. It records Decision Traces, stores them on 0G Storage, verifies them through deterministic replay, and attests the result on 0G Chain.
+0G Mirror is a verifiable decision layer for AI agents. It records Decision Traces, stores wallet-authorized artifacts on 0G Storage, verifies them through deterministic replay, and attests the result on 0G Chain.
 
 ## Links
 
@@ -20,6 +20,8 @@
 AI agents are beginning to make decisions with money, trust, and real consequences. Today, users often cannot verify what input, public evidence, model config, or tool path produced a decision. 0G Mirror solves this by turning each agent action into a structured Decision Trace.
 
 A Decision Trace contains the task input, public context, evidence used, model/provider/config metadata, selected tools, agent output, public rationale, hashes, 0G Storage URI/root, replay verification result, and on-chain attestation. 0G Mirror does not claim to expose private model chain-of-thought.
+
+The proof flow is wallet-native: the user signs the exact Decision Trace they want stored, a storage operator uploads that signed artifact to 0G Storage, and the user signs the final on-chain attestation through their own wallet.
 
 Olympus Arena is the live showcase mode built on top of Mirror Core. Two agents compete on the same decision challenge, Mirror records both traces, the user verifies them, and an Olympus Judge produces a Court Verdict that can also be stored and attested.
 
@@ -37,7 +39,7 @@ Olympus Arena is the live showcase mode built on top of Mirror Core. Two agents 
 
 ## What 0G does
 
-0G Storage holds the full Decision Trace and Court Verdict JSON artifacts as content-addressed payloads. 0G Chain stores the compact proof layer through `MirrorRegistry`: decision hash, trace URI, trace root, verification status, verdict URI/root, and emitted attestation events.
+0G Storage holds the full Decision Trace and Court Verdict JSON artifacts as content-addressed payloads. Before upload, the user signs an EIP-712 intent covering the exact artifact hash. 0G Chain stores the compact proof layer through `MirrorRegistry`: decision hash, trace URI, trace root, verification status, verdict URI/root, and emitted attestation events.
 
 This is not a decorative integration. The demo depends on 0G for durable trace storage and public on-chain attestations.
 
@@ -48,6 +50,7 @@ Current MVP:
 - Deterministic local agents for reliable demo behavior
 - Decision Trace and Court Verdict schemas
 - Real 0G Storage upload/download adapter
+- Wallet-signed storage upload intent
 - Wallet-native 0G Chain attestation
 - Replay verification: `Verified`, `Inconsistent`, `MissingEvidence`
 - Olympus Arena showcase

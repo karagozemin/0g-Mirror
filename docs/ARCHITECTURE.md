@@ -8,7 +8,7 @@
 
 The app is a Next.js + TypeScript monorepo with three primary user surfaces: Mirror Core, Verify, and Olympus Arena. Mirror Core creates and attests a single Decision Trace. Verify replays an existing trace. Olympus Arena is a showcase mode that compares two traces, runs a judge, and emits a Court Verdict.
 
-The current MVP uses deterministic local agents and replay verification. When 0G credentials are present, the same flow writes to real 0G Storage and 0G Chain. The product is wallet-native: on-chain attestations must be signed by the connected user wallet in the browser. The app does not create a local demo fallback — missing credentials or wallet access will surface errors and require configuration.
+The current MVP uses deterministic local agents and replay verification. When 0G credentials are present, the same flow writes to real 0G Storage and 0G Chain. The product is wallet-native: users sign the exact storage upload intent and then sign on-chain attestations from their own wallet. The storage operator can upload only the signed artifact; it cannot mutate the trace without breaking the signed artifact hash.
 
 Relevant code paths:
 
@@ -25,7 +25,7 @@ Relevant code paths:
 | --- | --- | --- |
 | Decision generation | Deterministic local agents | Optional external model/provider adapters |
 | Verification | Deterministic replay verification | 0G Compute-backed verifiable execution |
-| Storage | Real 0G Storage uploads when configured | Larger trace indexing and search |
+| Storage | Wallet-signed upload intent + storage-operator 0G Storage upload | Larger trace indexing and search |
 | Chain | Real MirrorRegistry attestations on 0G Chain | Role-based verifier registry |
 | Demo | Olympus Arena showcase | Public trace explorer and multi-agent graph |
 
@@ -79,11 +79,12 @@ sequenceDiagram
 
   User->>Mirror: 1. Generate decision
   Mirror->>Agent: 2. Build decision from public inputs
-  Mirror->>Hash: 3. Hash trace
-  Hash-->>Mirror: inputHash, outputHash, decisionHash
-  Mirror->>Storage: 4. Upload Decision Trace JSON
+  Mirror->>Hash: 3. Hash trace + artifact
+  Hash-->>Mirror: inputHash, outputHash, decisionHash, artifactHash
+  User->>Mirror: 4. Sign EIP-712 storage intent
+  Mirror->>Storage: 5. Upload signed Decision Trace JSON
   Storage-->>Mirror: 0g://root + storage tx
-  Mirror->>Chain: 5. Register trace
+  Mirror->>Chain: 6. Register trace with user wallet
   Chain-->>Mirror: traceId + attestation event
   User->>Verify: 6. Replay verification
   Verify-->>Mirror: 7. Verified / Inconsistent / Missing Evidence
@@ -98,10 +99,12 @@ sequenceDiagram
 2. Build trace. The app packages agent identity, task context, model metadata, evidence, hashes, and replay status into a versioned Decision Trace.
 3. Hash trace. The trace is normalized and hashed into input, output, and decision hashes.
 4. Upload trace. The JSON payload is uploaded to 0G Storage through the SDK when credentials are present, or saved locally in demo mode.
-5. Register trace. MirrorRegistry records the decision hash, storage URI, and storage root on 0G Chain.
-6. Replay verification. The verifier recomputes the expected outcome from the public evidence and checks for missing evidence.
-7. Update status. The on-chain trace status is updated to Verified, Inconsistent, or Missing Evidence.
-8. Display proof. The UI renders the trace card, storage URI, transaction links, and verification result.
+5. Authorize upload. The user signs an EIP-712 storage intent covering schema, artifact ID, artifact hash, primary hash, nonce, and expiry.
+6. Upload trace. The storage operator verifies the wallet signature and uploads only the exact signed artifact to 0G Storage.
+7. Register trace. MirrorRegistry records the decision hash, storage URI, and storage root on 0G Chain through the user's wallet.
+8. Replay verification. The verifier recomputes the expected outcome from the public evidence and checks for missing evidence.
+9. Update status. The on-chain trace status is updated to Verified, Inconsistent, or Missing Evidence.
+10. Display proof. The UI renders the trace card, storage URI, transaction links, and verification result.
 
 ## 5. Storage layer
 
@@ -112,6 +115,8 @@ It uses the official 0G Storage SDK (`Indexer` and `MemData`) to serialize JSON 
 Upload flow:
 
 - normalize and serialize the Decision Trace JSON
+- ask the user to sign an EIP-712 upload intent for the exact artifact hash
+- verify the signer, artifact hash, primary hash, nonce, and expiry server-side
 - compute the Merkle root with `MemData.merkleTree()`
 - upload through the 0G indexer with a storage signer
 - return `uri`, `root`, and `txHash`
@@ -123,7 +128,7 @@ Download and verification flow:
 - read and parse the downloaded payload
 - compare the payload contents and hashes against the expected trace
 
-When credentials are missing, the API returns a `MISSING_CONFIG` response. The app does not fabricate local storage or attestations; instead the UI surfaces the error and requires the operator to provide the correct storage configuration and connect a wallet to proceed.
+When credentials are missing, the API returns a `MISSING_CONFIG` response. When the wallet signature is missing or invalid, the API rejects the upload before touching 0G Storage. The app does not fabricate local storage or attestations.
 
 ## 6. Chain layer
 

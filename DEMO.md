@@ -10,7 +10,7 @@ Full walkthrough: [docs/DEMO_FLOW.md](./docs/DEMO_FLOW.md)
 2. Explain the problem: consequential agent decisions need public evidence trails, not hidden reasoning.
 3. Open Mirror Core, select an agent, and run a decision.
 4. Show the Decision Trace: input, evidence, model config, tools, public rationale, output, and decision hash.
-5. Store the trace on 0G Storage and show the storage URI.
+5. Sign the wallet storage intent, store the exact signed trace on 0G Storage, and show the storage URI.
 6. Register the trace on 0G Chain with the connected wallet and show the attestation transaction.
 7. Run replay verification and show the `Verified` status update.
 8. Open Olympus Arena and run Aegis vs Nyx on the same DeFi vault challenge.

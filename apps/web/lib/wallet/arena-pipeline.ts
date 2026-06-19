@@ -89,12 +89,12 @@ export async function verifyBothTracesWithWallet(
   let currentB = traceB;
 
   if (plan.needsStoreA) {
-    progress("storage", "0G Storage", "Uploading challenger Decision Trace through the storage API.");
+    progress("storage", "Wallet-authorized storage", "Sign challenger trace intent; storage operator uploads the exact artifact.");
     currentA = await storeTraceWithWallet(currentA);
   }
 
   if (plan.needsStoreB) {
-    progress("storage", "0G Storage", "Uploading defender Decision Trace through the storage API.");
+    progress("storage", "Wallet-authorized storage", "Sign defender trace intent; storage operator uploads the exact artifact.");
     currentB = await storeTraceWithWallet(currentB);
   }
 

@@ -1,12 +1,18 @@
 "use client";
 
 import { BrowserProvider, JsonRpcSigner } from "ethers";
-import { getWalletClient } from "@wagmi/core";
+import { getAccount, getWalletClient, signTypedData } from "@wagmi/core";
 import type { WalletClient } from "viem";
 import { wagmiConfig } from "@/lib/wallet/wagmi";
 import galileoChain from "@/lib/wallet/chains";
-import { ensureGalileoChain } from "@/lib/wallet/require";
+import { ensureGalileoChain, getRegistryAddress } from "@/lib/wallet/require";
 import type { UploadResult } from "@/lib/0g/storage";
+import type { StorableArtifact } from "@/lib/0g/storage-intent";
+import {
+  createStorageUploadIntent,
+  storageIntentDomain,
+  storageIntentTypes
+} from "@/lib/0g/storage-intent";
 
 const STORAGE_RPC =
   process.env.NEXT_PUBLIC_0G_STORAGE_RPC ??
@@ -87,11 +93,31 @@ export async function uploadJsonWithWallet(data: unknown): Promise<UploadResult>
   };
 }
 
-export async function uploadJsonViaStorageApi(data: unknown): Promise<UploadResult> {
+export async function uploadJsonViaStorageApi(data: StorableArtifact): Promise<UploadResult> {
+  await ensureGalileoChain();
+  const account = getAccount(wagmiConfig);
+  if (!account.address) {
+    throw new Error("Connect your wallet to authorize 0G Storage upload.");
+  }
+  const registryAddress = getRegistryAddress();
+  const intent = createStorageUploadIntent(data);
+  const signature = await signTypedData(wagmiConfig, {
+    account: account.address,
+    domain: storageIntentDomain(galileoChain.id, registryAddress),
+    types: storageIntentTypes,
+    primaryType: "StorageUploadIntent",
+    message: intent
+  });
+
   const response = await fetch("/api/storage/upload", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ data })
+    body: JSON.stringify({
+      data,
+      intent,
+      signature,
+      signer: account.address
+    })
   });
   const payload = await response.json().catch(() => null) as
     | ({ error?: string } & Partial<UploadResult>)

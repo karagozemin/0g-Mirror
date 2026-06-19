@@ -12,6 +12,8 @@ Verifiable Decision Trails for AI Agents
 
 What 0G Mirror does in one line: capture agent decisions as auditable, content-addressed Decision Traces and attest them on-chain.
 
+0G Mirror uses a wallet-native proof flow: the user signs the exact Decision Trace they want stored, a storage operator uploads that signed artifact to 0G Storage, and the user signs the final on-chain attestation through their own wallet.
+
 ## Live 0G Proof
 
 | Item | Value |
@@ -46,8 +48,8 @@ Protocols and users need verifiable records of consequential agent actions — n
 
 1. Decision Capture — deterministic agent emits a versioned Decision Trace (inputs, evidence, public rationale, model metadata).
 2. Content Hashing — trace is normalized and hashed to create stable roots and decision hashes.
-3. Storage & Attestation — trace JSON uploaded to 0G Storage (0g:// URI) and the root/hash registered on 0G Chain via `MirrorRegistry`.
-4. Replay Verification — verifier deterministically replays the decision using the public evidence and updates on-chain status (Verified/Inconsistent/MissingEvidence).
+3. Wallet-authorized Storage — the user signs an EIP-712 upload intent for the exact trace, then the storage operator uploads that signed artifact to 0G Storage.
+4. Attestation & Replay — the user signs the final `MirrorRegistry` transaction and the verifier updates status through replay.
 
 ## Olympus Arena (showcase)
 
@@ -104,9 +106,10 @@ Recommended variables (examples):
 - `NEXT_PUBLIC_MIRROR_REGISTRY_ADDRESS` (deployed address)
 - `NEXT_PUBLIC_0G_CHAIN_RPC` (RPC endpoint)
 - `NEXT_PUBLIC_0G_CHAIN_ID` (e.g. 16602)
-- `0G_STORAGE_RPC`, `0G_STORAGE_INDEXER`, `0G_STORAGE_PRIVATE_KEY` (only if server-side storage upload is required)
+- `0G_STORAGE_RPC`, `0G_STORAGE_INDEXER`, `0G_STORAGE_PRIVATE_KEY` for the server-side 0G Storage upload route
+- `OG_STORAGE_RPC`, `OG_STORAGE_INDEXER`, `OG_STORAGE_PRIVATE_KEY` can be used as Vercel-safe aliases for the same storage values
 
-No server-side private key is used for 0G Chain transactions. Chain writes are signed by the connected user wallet in the browser.
+No server-side private key is used for 0G Chain transactions. Chain writes are signed by the connected user wallet in the browser. The storage private key is used only by the API route that uploads a wallet-authorized Decision Trace JSON to 0G Storage.
 
 Note: The deployed UI can be previewed without sending transactions, but previewed local browser state is not on-chain proof. Real 0G proof requires configured 0G Storage endpoints and a connected wallet to sign 0G Chain transactions. If credentials or wallet access are missing, the UI surfaces an error and asks the user to provide the required configuration or connect a wallet.
 
@@ -131,5 +134,3 @@ See the 90-second judge script: [docs/DEMO_FLOW.md](./docs/DEMO_FLOW.md)
 - Browser wallet flow (MetaMask/Rabby)
 - Public Trace Explorer
 - Multi-agent decision graphs and verifier roles
-
-

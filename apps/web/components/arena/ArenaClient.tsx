@@ -159,7 +159,7 @@ export function ArenaClient() {
       const claim = "Trace B ignored critical risk evidence.";
       const nextVerdict = runOlympusJudge(traceA, traceB, claim);
 
-      setAppealStep(2, "0G Storage", "Uploading the court verdict through the storage API.", "storage");
+      setAppealStep(2, "Wallet-authorized storage", "Sign verdict intent; storage operator uploads the exact artifact.", "storage");
       const storedVerdict = await storeVerdictWithWallet(nextVerdict);
 
       setAppealStep(3, "On-chain verdict", "Confirm court verdict registration in your wallet.", "chain");
@@ -309,7 +309,7 @@ export function ArenaClient() {
           </div>
           <p className="mt-3 text-sm text-silver/45">
             {verifyWalletTxCount
-              ? `Verify both traces (${verifyWalletTxCount} wallet confirmation${verifyWalletTxCount === 1 ? "" : "s"} after storage upload), then appeal to Olympus (1 storage upload + 1 wallet confirmation).`
+              ? `Verify both traces (${verifyWalletTxCount} chain wallet confirmation${verifyWalletTxCount === 1 ? "" : "s"} after storage intent signatures), then appeal to Olympus.`
               : "Verify both traces first, then appeal to Olympus."}
           </p>
           <AnimatePresence>

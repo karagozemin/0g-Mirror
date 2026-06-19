@@ -133,10 +133,16 @@ export function MirrorClient() {
       showNotice("Store on 0G already completed. Continue with Register On-chain.", "info");
       return;
     }
+    try {
+      ensureConnected();
+    } catch (error) {
+      showNotice(formatWalletError(error), "warn");
+      return;
+    }
     setBusy("store");
     setNotice(null);
-    setOperationStep(1, "storage", "Preparing 0G Storage payload", "Serializing the decision trace and evidence bundle.");
-    setOperationStep(2, "storage", "Uploading to 0G Storage", "Sending the trace through the 0G Storage API route.");
+    setOperationStep(1, "storage", "Sign storage intent", "Authorize this exact Decision Trace with your wallet.");
+    setOperationStep(2, "storage", "Uploading to 0G Storage", "Storage operator uploads only the signed artifact.");
     try {
       const result = await ensureStoredTrace(trace);
       if (result.notice) {
