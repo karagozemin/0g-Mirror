@@ -12,11 +12,11 @@ export function OpenLinksInNewTab() {
       const target = event.target;
       if (!(target instanceof Element)) return;
 
-      const anchor = target.closest("a[href]") as HTMLAnchorElement | null;
+      const anchor = target.closest("a[href][data-new-tab='true']") as HTMLAnchorElement | null;
       if (!anchor?.href) return;
 
-      // Ignore in-page anchors. Everything that opens another page/view should
-      // preserve the current demo state by opening in a new tab.
+      // Only links explicitly marked as proof/demo-preserving links open in a
+      // new tab. Main navigation such as Mirror Core and Arena stays in-tab.
       const rawHref = anchor.getAttribute("href") ?? "";
       if (rawHref.startsWith("#")) return;
 

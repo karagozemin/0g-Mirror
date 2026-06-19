@@ -52,6 +52,8 @@ export function ExplorerValue({
         transition={{ type: "spring", stiffness: 520, damping: 28 }}
         className={sharedClassName}
         title={title}
+        target="_blank"
+        data-new-tab="true"
       >
         {content}
       </MotionLink>
@@ -60,6 +62,7 @@ export function ExplorerValue({
           href={href}
           target="_blank"
           rel="noreferrer"
+          data-new-tab="true"
           whileHover={{ y: -1, scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           transition={{ type: "spring", stiffness: 520, damping: 28 }}

@@ -454,7 +454,13 @@ export function MirrorClient() {
                     </AnimatePresence>
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-silver/45">
                       <span className="font-mono text-xs">Stored · Verified · Attested</span>
-                      <Link href={`/verify/${trace.traceId}`} className="font-semibold text-beam transition hover:text-beam/75">
+                      <Link
+                        href={`/verify/${trace.traceId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        data-new-tab="true"
+                        className="font-semibold text-beam transition hover:text-beam/75"
+                      >
                         Open verifier →
                       </Link>
                     </div>
