@@ -99,6 +99,16 @@ export function MirrorClient() {
     });
   }
 
+  function setOperationError(label: string, detail: string, step = 1) {
+    setOperationProgress({
+      phase: "error",
+      label,
+      detail,
+      step,
+      percent: 100
+    });
+  }
+
   async function runDecision() {
     const currentAgentId = agentId;
     const currentTaskId = taskId;
@@ -141,7 +151,7 @@ export function MirrorClient() {
       const result = await ensureStoredTrace(trace);
       if (result.notice) {
         showNotice(result.notice, "warn");
-        setOperationProgress(null);
+        setOperationError("0G Storage failed", result.notice, 2);
         setBusy(null);
         return;
       }
@@ -149,8 +159,9 @@ export function MirrorClient() {
       setOperationStep(3, "complete", "Storage recorded", "Decision trace is available in 0G Storage.");
       showNotice("Stored on 0G Storage.", "success");
     } catch (error) {
-      showNotice(formatWalletError(error), "warn");
-      setOperationProgress(null);
+      const message = formatWalletError(error);
+      showNotice(message, "warn");
+      setOperationError("0G Storage failed", message, 2);
     }
     setBusy(null);
   }
@@ -180,7 +191,7 @@ export function MirrorClient() {
       const result = await ensureRegisteredTrace(trace);
       if (result.notice) {
         showNotice(result.notice, "warn");
-        setOperationProgress(null);
+        setOperationError("Chain registration failed", result.notice, 2);
         setBusy(null);
         return;
       }
@@ -188,8 +199,9 @@ export function MirrorClient() {
       setOperationStep(3, "complete", "Attestation ready", "Trace ID and tx hash are recorded on-chain.");
       showNotice(`Registered on-chain. Trace ID: ${result.trace.attestation?.traceId}.`, "success");
     } catch (error) {
-      showNotice(formatWalletError(error), "warn");
-      setOperationProgress(null);
+      const message = formatWalletError(error);
+      showNotice(message, "warn");
+      setOperationError("Chain registration failed", message, 2);
     }
     setBusy(null);
   }
@@ -220,7 +232,7 @@ export function MirrorClient() {
       const result = await updateTraceStatus(verified);
       if (result.notice) {
         showNotice(result.notice, "warn");
-        setOperationProgress(null);
+        setOperationError("Replay attestation failed", result.notice, 2);
         setBusy(null);
         return;
       }
@@ -235,8 +247,9 @@ export function MirrorClient() {
       setShowConfetti(true);
       celebrateSuccess();
     } catch (error) {
-      showNotice(formatWalletError(error), "warn");
-      setOperationProgress(null);
+      const message = formatWalletError(error);
+      showNotice(message, "warn");
+      setOperationError("Replay attestation failed", message, 2);
     }
 
     setBusy(null);
@@ -415,6 +428,11 @@ export function MirrorClient() {
                 >
                   <TraceCard trace={trace} />
                   <div className="glass rounded-2xl p-5">
+                    {notice ? (
+                      <div className="mb-4">
+                        <Notice variant={noticeVariant}>{notice}</Notice>
+                      </div>
+                    ) : null}
                     <div className="grid gap-3 sm:grid-cols-3">
                         <Button onClick={storeTrace} loading={busy === "store"} disabled={busy !== null || !trace || hasStoredTrace}>
                         <Database className="h-4 w-4" />
@@ -429,7 +447,15 @@ export function MirrorClient() {
                           3. Verify Decision
                       </Button>
                     </div>
-                    <AnimatePresence>{operationProgress ? <OperationProgressPanel progress={operationProgress} totalSteps={TRACE_OPERATION_STEP_TOTAL} /> : null}</AnimatePresence>
+                    <AnimatePresence>
+                      {operationProgress ? (
+                        <OperationProgressPanel
+                          progress={operationProgress}
+                          totalSteps={TRACE_OPERATION_STEP_TOTAL}
+                          accent={operationProgress.phase === "error" ? "danger" : "gold"}
+                        />
+                      ) : null}
+                    </AnimatePresence>
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-silver/45">
                       <span className="font-mono text-xs">Stored · Verified · Attested</span>
                       <Link href={`/verify/${trace.traceId}`} className="font-semibold text-beam transition hover:text-beam/75">

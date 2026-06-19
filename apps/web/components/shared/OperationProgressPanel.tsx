@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 
 export type OperationProgressState = {
   phase: string;
@@ -27,6 +27,14 @@ const accents = {
     percent: "text-beam",
     bar: "bg-gradient-to-r from-beam via-gold to-beam",
     shadow: "shadow-[0_0_20px_rgba(168,85,247,0.32)]"
+  },
+  danger: {
+    panel: "border-danger/25 bg-danger/8",
+    badge: "border-danger/35 bg-danger/12 text-danger",
+    label: "text-danger/80",
+    percent: "text-danger",
+    bar: "bg-gradient-to-r from-danger via-gold to-danger",
+    shadow: "shadow-[0_0_20px_rgba(248,113,113,0.28)]"
   }
 } as const;
 
@@ -41,6 +49,7 @@ export function OperationProgressPanel({
 }) {
   const theme = accents[accent];
   const isComplete = progress.phase === "complete";
+  const isError = progress.phase === "error";
 
   return (
     <motion.div
@@ -53,7 +62,13 @@ export function OperationProgressPanel({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${theme.badge}`}>
-            {isComplete ? <CheckCircle2 className="h-5 w-5" /> : <Loader2 className="h-5 w-5 animate-spin" />}
+            {isComplete ? (
+              <CheckCircle2 className="h-5 w-5" />
+            ) : isError ? (
+              <AlertTriangle className="h-5 w-5" />
+            ) : (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            )}
           </div>
           <div className="min-w-0">
             <p className={`font-mono text-[10px] uppercase tracking-[0.18em] ${theme.label}`}>{progress.label}</p>

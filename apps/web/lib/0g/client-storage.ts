@@ -8,9 +8,23 @@ import galileoChain from "@/lib/wallet/chains";
 import { ensureGalileoChain } from "@/lib/wallet/require";
 import type { UploadResult } from "@/lib/0g/storage";
 
-const STORAGE_RPC = process.env.NEXT_PUBLIC_0G_CHAIN_RPC ?? "https://evmrpc-testnet.0g.ai";
+const STORAGE_RPC =
+  process.env.NEXT_PUBLIC_0G_STORAGE_RPC ??
+  process.env.NEXT_PUBLIC_0G_CHAIN_RPC ??
+  "https://evmrpc-testnet.0g.ai";
 const STORAGE_INDEXER =
   process.env.NEXT_PUBLIC_0G_STORAGE_INDEXER ?? "https://indexer-storage-testnet-turbo.0g.ai";
+
+function storageErrorMessage(error: unknown, fallback: string) {
+  if (!error) return fallback;
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return fallback;
+  }
+}
 
 function walletClientToSigner(walletClient: WalletClient): JsonRpcSigner {
   const { account, chain, transport } = walletClient;
@@ -36,20 +50,27 @@ export async function uploadJsonWithWallet(data: unknown): Promise<UploadResult>
   }
 
   const signer = walletClientToSigner(walletClient);
-  const { Indexer, MemData } = await import("@0gfoundation/0g-storage-ts-sdk");
+  let sdk: typeof import("@0gfoundation/0g-storage-ts-sdk");
+  try {
+    sdk = await import("@0gfoundation/0g-storage-ts-sdk");
+  } catch (error) {
+    throw new Error(`0G Storage SDK could not load in this browser: ${storageErrorMessage(error, "unknown error")}`);
+  }
+
+  const { Indexer, MemData } = sdk;
   const bytes = new TextEncoder().encode(JSON.stringify(data, null, 2));
   const file = new MemData(bytes);
   const [tree, treeError] = await file.merkleTree();
 
   if (treeError || !tree) {
-    throw treeError ?? new Error("Unable to compute 0G merkle root.");
+    throw new Error(storageErrorMessage(treeError, "Unable to compute 0G merkle root."));
   }
 
   const indexer = new Indexer(STORAGE_INDEXER);
   const [upload, uploadError] = await indexer.upload(file, STORAGE_RPC, signer as never);
 
   if (uploadError || !upload) {
-    throw uploadError ?? new Error("0G Storage upload failed.");
+    throw new Error(storageErrorMessage(uploadError, "0G Storage upload failed."));
   }
 
   const uploadedRoot = "rootHash" in upload ? upload.rootHash : upload.rootHashes[0] ?? tree.rootHash();
